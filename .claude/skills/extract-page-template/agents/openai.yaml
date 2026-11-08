@@ -1,0 +1,5 @@
+interface:
+  display_name: "Extract Page Template"
+  short_description: "Reverse-engineer a landing page into a reusable contract"
+  default_prompt: "Use $extract-page-template to turn this landing page into a reusable section contract without copying its words."
+

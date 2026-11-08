@@ -1,0 +1,5 @@
+interface:
+  display_name: "Page QA"
+  short_description: "Browser-test landing pages before handoff"
+  default_prompt: "Use $page-qa to check this landing page at desktop and phone widths and return a pass/fail report."
+

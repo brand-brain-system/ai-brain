@@ -1,0 +1,10 @@
+id,filename,angle,swap,needs,notes
+1,sale-01.webp,flash-sale;promo-code,hard,offer;deadline;code,"Réalisation - lifestyle model photo, bold 'FLASH SALE.' headline, urgency subline (FINAL DAY | 25% off), promo code"
+2,sale-02.webp,end-of-season;minimal,easy,real-event;offer,"Medelita - moody blurred lifestyle bg, minimal 'End of Season Sale' headline + subline, small logo, no product shown"
+3,sale-03.webp,price-strike;accept-decline-bar,easy,price;offer;claim,"Ryze - benefit list header, struck-through price vs sale price, product shot on pedestal, decline/accept CTA bar (interactive-style)"
+4,sale-04.webp,doodle-callouts,hard,offer,"Apparel brand - candid lifestyle photo, hand-drawn doodle speech-bubble callouts ('Summer Sale', 'Up to 50% off')"
+5,sale-05.webp,stamp-repeat-headline,easy,real-event;offer,"Marlow pillows - product photo, repeated stamp-style 'Secret Sale!' headline block, short benefit line"
+6,sale-06.jpg,percent-off;sticker-code,easy,offer;code,"Bleame - bold '30% OFF' headline, arched product photo frame, sticker-style promo code badge"
+7,sale-07.webp,black-friday;icon-tags,easy,real-event;offer;claim,"Bloat No More - oversized 'BLACK FRIDAY' wordmark bg, bold claim headline, product shot, 3 icon benefit tags, discount + free shipping banner"
+8,pb-37-offer-burst.png,hero-statement;offer-burst;icon-bar,medium,offer;real-event;claim,"Adcrate playbook #37. Bloom greens - 'BLOAT KILLER.' white banner, lime starburst 'GET UP TO 35% OFF', hand lifting the tub off its box on dark bg, berries, icon strip with 3 benefits, lime bottom banner 'SUMMER SHRED SALE'. 'Up to' needs care under Danish price rules; health claims only if the brand makes them. AI-generated example Card: cards/pb-37.md (word budget per zone, story, adaptation notes)."
+9,hp-16-launch-price-strike.webp,launch;price-strike;icon-list,easy,offer;price;guarantee,"Mars Men - dark moody 9:16, 'INTRODUCING THE LAUNCH KIT' tag, huge '50% OFF FOR LIFE', three icon lines (free shipping, free gifts, 90-day guarantee), round price-strike badge, pyramid of tubs. Before-price must be the real 30-day lowest price. Parker share board (the lead, 29 Sep 2026)."

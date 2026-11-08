@@ -1,0 +1,381 @@
+<title>Ad Account Playbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field manual. One long column; a stage rail you click, a detail sheet beside it; the loop, the ladder and the matrix as working diagrams. */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --ink:#132322; --muted:#5b6b69; --line:#d5dddb;
+  --accent:#0d6b63; --accent-soft:#d8ece9; --stop:#b86e00; --stop-soft:#fbecd3;
+  --won:#1f7a3f; --won-soft:#d9efe0; --lost:#a33a2b; --lost-soft:#f6dcd7; --live:#2d5f9a; --live-soft:#dbe6f4; --empty:#eef1f0;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1716; --surface:#16211f; --ink:#e4ecea; --muted:#9aaba8; --line:#2b3a38;
+  --accent:#5cc2b6; --accent-soft:#16352f; --stop:#f0aa45; --stop-soft:#3a2a10;
+  --won:#6fcf8f; --won-soft:#163223; --lost:#ef8a7a; --lost-soft:#3b1d18; --live:#8db7ea; --live-soft:#1a2a40; --empty:#1b2725; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1716; --surface:#16211f; --ink:#e4ecea; --muted:#9aaba8; --line:#2b3a38;
+  --accent:#5cc2b6; --accent-soft:#16352f; --stop:#f0aa45; --stop-soft:#3a2a10;
+  --won:#6fcf8f; --won-soft:#163223; --lost:#ef8a7a; --lost-soft:#3b1d18; --live:#8db7ea; --live-soft:#1a2a40; --empty:#1b2725; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:32px 64px}
+.wrap{max-width:1080px; margin:0 auto; display:flex; flex-direction:column; gap:56px}
+h1,h2,h3{font-family:var(--display); text-wrap:balance; margin:0; line-height:1.15}
+h1{font-size:clamp(2rem, 5vw, 3.1rem); font-weight:700; letter-spacing:-.01em}
+h2{font-size:1.6rem; font-weight:700}
+h3{font-size:1.05rem; font-weight:700}
+p{margin:0; max-width:68ch}
+code,.mono{font-family:var(--mono); font-size:.86em}
+.eyebrow{font-size:.74rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:600}
+.lede{color:var(--muted); font-size:1.05rem}
+header{display:flex; flex-direction:column; gap:14px}
+.legend{display:flex; flex-wrap:wrap; gap:10px 18px; font-size:.84rem; color:var(--muted)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.dot{width:10px; height:10px; border-radius:50%; display:inline-block}
+section{display:flex; flex-direction:column; gap:18px}
+
+/* Stage rail + sheet */
+.play{display:grid; grid-template-columns:minmax(0, 320px) minmax(0,1fr); gap:20px; align-items:start}
+.rail{display:flex; flex-direction:column; gap:6px; margin:0; padding:0; list-style:none}
+.rail button{all:unset; box-sizing:border-box; width:100%; cursor:pointer; display:grid; grid-template-columns:44px 1fr; gap:10px; align-items:center;
+  padding:10px 12px; border-radius:10px; border:1px solid transparent}
+.rail button:hover{background:var(--surface); border-color:var(--line)}
+.rail button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.rail button[aria-selected="true"]{background:var(--surface); border-color:var(--accent)}
+.num{font-family:var(--mono); font-size:.8rem; color:var(--accent); font-weight:500}
+.rail .t{font-weight:600; line-height:1.3}
+.rail .d{font-size:.8rem; color:var(--muted); font-family:var(--mono)}
+.sheet{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:18px; min-width:0}
+.sheet-head{display:flex; flex-direction:column; gap:6px}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.field{display:flex; flex-direction:column; gap:6px; min-width:0}
+.field h4{margin:0; font-size:.74rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); font-weight:600}
+.field ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:4px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{font-family:var(--mono); font-size:.8rem; padding:3px 8px; border-radius:6px; background:var(--accent-soft); color:var(--ink); overflow-wrap:anywhere}
+.file{font-family:var(--mono); font-size:.8rem; color:var(--muted); overflow-wrap:anywhere}
+.stop{background:var(--stop-soft); border-left:3px solid var(--stop); padding:10px 14px; border-radius:0 8px 8px 0; font-size:.92rem}
+.stop b{color:var(--stop)}
+.say{font-style:italic; color:var(--muted)}
+
+/* Loop */
+.loop-wrap{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:center}
+.loop svg{width:100%; max-width:460px; height:auto; display:block; margin:0 auto}
+.loop text{font-family:var(--body); font-size:12.5px; fill:var(--ink)}
+.loop .small{font-size:10.5px; fill:var(--muted); font-family:var(--mono)}
+.steps{display:flex; flex-direction:column; gap:10px; margin:0; padding:0; list-style:none; counter-reset:s}
+.steps li{display:grid; grid-template-columns:28px 1fr; gap:10px}
+.steps li::before{counter-increment:s; content:counter(s); font-family:var(--mono); font-size:.8rem; color:var(--accent); padding-top:2px}
+
+/* Ladder */
+.seg{display:flex; flex-wrap:wrap; gap:6px}
+.seg button{all:unset; cursor:pointer; padding:6px 12px; border-radius:999px; border:1px solid var(--line); font-size:.88rem; background:var(--surface)}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--bg); border-color:var(--accent)}
+.seg button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.ladder{display:grid; grid-template-columns:repeat(11, minmax(0,1fr)); gap:6px}
+.rung{border:1px solid var(--line); border-radius:8px; padding:10px 8px; display:flex; flex-direction:column; gap:4px; min-height:110px; background:var(--surface); transition:opacity .2s}
+.rung .n{font-family:var(--mono); font-size:.75rem; color:var(--muted)}
+.rung .l{font-size:.82rem; font-weight:600; line-height:1.25}
+.rung.off{opacity:.32}
+.rung.start{border-color:var(--accent); box-shadow:inset 0 3px 0 var(--accent)}
+.note{font-size:.9rem; color:var(--muted)}
+
+/* Matrix */
+.scroll{overflow-x:auto}
+table{border-collapse:separate; border-spacing:4px; width:100%; min-width:640px}
+th{font-size:.76rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:600; text-align:left; padding:4px 6px}
+td{border-radius:6px; padding:8px; font-size:.84rem; vertical-align:top}
+td.a{background:transparent; font-weight:500; width:34%}
+td.a .q{display:block; font-size:.78rem; color:var(--muted); font-style:italic; font-weight:400}
+.c-won{background:var(--won-soft); color:var(--won)} .c-live{background:var(--live-soft); color:var(--live)}
+.c-lost{background:var(--lost-soft); color:var(--lost)} .c-none{background:var(--empty); color:var(--muted)}
+.c-gap{background:var(--empty); outline:2px dashed var(--stop); outline-offset:-2px; color:var(--stop); font-weight:600}
+td.cell{text-align:center; font-family:var(--mono); font-size:.8rem}
+
+/* Name builder */
+.builder{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px; display:flex; flex-direction:column; gap:16px}
+.bgrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px}
+.bgrid label{display:flex; flex-direction:column; gap:4px; font-size:.78rem; color:var(--muted); font-weight:600; letter-spacing:.04em}
+select,input{font:inherit; font-size:.9rem; padding:7px 8px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--ink); min-width:0}
+select:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.out{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.out output{font-family:var(--mono); font-size:1rem; padding:10px 14px; border-radius:8px; background:var(--accent-soft); overflow-wrap:anywhere; flex:1 1 300px}
+.btn{all:unset; cursor:pointer; padding:9px 14px; border-radius:8px; background:var(--accent); color:var(--bg); font-weight:600; font-size:.9rem}
+.btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+
+/* Vocabulary + files */
+.vocab{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:14px}
+.term{border-top:2px solid var(--ink); padding-top:8px; display:flex; flex-direction:column; gap:4px}
+.term b{font-family:var(--display); font-size:1.05rem}
+.term span{font-size:.9rem; color:var(--muted)}
+.files{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:10px}
+.files div{border:1px solid var(--line); border-radius:10px; padding:12px; background:var(--surface); display:flex; flex-direction:column; gap:4px; min-width:0}
+.files code{color:var(--accent); overflow-wrap:anywhere}
+.files span{font-size:.86rem; color:var(--muted)}
+footer{font-size:.84rem; color:var(--muted); border-top:1px solid var(--line); padding-top:16px}
+
+@media (max-width:820px){
+  .play,.loop-wrap{grid-template-columns:1fr}
+  .grid2{grid-template-columns:1fr}
+  .ladder{grid-template-columns:repeat(4, minmax(0,1fr))}
+  .rung{min-height:auto}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Brand-brain factory &middot; v20</span>
+  <h1>Ad Account Playbook</h1>
+  <p class="lede">What we do, in order, from the day a new brand gives us read access to its Meta ad account until the account scales on more than one or two angles. Every step is a skill in the factory; every output is a file in the brand's own brain repo on GitHub.</p>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--accent)"></i>Skill runs</span>
+    <span><i class="dot" style="background:var(--stop)"></i>Stop: a person decides</span>
+    <span class="mono">/account-playbook</span><span>runs the whole thing and keeps <code>running-notes/playbook-status.md</code></span>
+  </div>
+</header>
+
+<section aria-labelledby="h-stages">
+  <span class="eyebrow">The 90 days</span>
+  <h2 id="h-stages">Nine stages, from access to the monthly loop</h2>
+  <div class="play">
+    <ul class="rail" role="tablist" aria-label="Stages" id="rail"></ul>
+    <article class="sheet" id="sheet" role="tabpanel" aria-live="polite"></article>
+  </div>
+</section>
+
+<section aria-labelledby="h-loop">
+  <span class="eyebrow">Every week, from week 3</span>
+  <h2 id="h-loop">The feedback loop</h2>
+  <div class="loop-wrap">
+    <div class="loop">
+      <svg viewBox="0 0 460 460" role="img" aria-label="Weekly loop: launch, leaderboard, breakdown, angle bank, gap matrix, brief, make, policy check, back to launch">
+        <circle cx="230" cy="230" r="160" style="fill:none;stroke:var(--line);stroke-width:2"/>
+        <g id="loopnodes"></g>
+        <text x="230" y="222" text-anchor="middle" style="font-family:var(--display);font-size:20px;font-weight:700">Better odds</text>
+        <text x="230" y="244" text-anchor="middle" class="small">on every ad</text>
+      </svg>
+    </div>
+    <ol class="steps">
+      <li><span><b>Launch, named.</b> Every ad carries its angle, persona, awareness, format, voice and shape in its name. The team launches; Claude never does.</span></li>
+      <li><span><b>Leaderboard.</b> <code>creative-leaderboard</code> ranks the week by angle, persona, format and voice, with hit rate. The next batch starts from what won, not from what someone liked.</span></li>
+      <li><span><b>Breakdown.</b> <code>ad-breakdown</code> on the best and the worst. The strategist writes a guess first; the breakdown shows what they missed.</span></li>
+      <li><span><b>Angle bank.</b> Statuses move: idea, briefed, live, won, lost. Tags land in <code>angle-bank/ad-tags.csv</code>.</span></li>
+      <li><span><b>Gap matrix.</b> Angles against awareness levels. An empty cell with strong customer evidence is a message the buyers have never heard.</span></li>
+      <li><span><b>Brief and make.</b> Shape first, voice second. A new angle goes on a proven format; a proven angle goes into new formats.</span></li>
+      <li><span><b>Policy check.</b> <code>ad-policy-check</code> is the last gate before the team launches.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section aria-labelledby="h-ladder">
+  <span class="eyebrow">Scripts</span>
+  <h2 id="h-ladder">The awareness ladder: the more they know, the lower you start</h2>
+  <div class="seg" id="seg" role="group" aria-label="Awareness level"></div>
+  <div class="ladder" id="ladder"></div>
+  <p class="note" id="laddernote"></p>
+  <p class="note">Then pick a shape: symptom call out, enemy first, story with a cost, objection opener or authority secret. 84 of 100 tagged winners blamed something specific the viewer uses now; 67 opened on the viewer's problem; 67 gave one reason it works. Those numbers come from one practitioner's tags and are not spend data. Method: <code>winning-script-patterns.md</code>, <code>awareness-script-ladder.md</code>.</p>
+</section>
+
+<section aria-labelledby="h-matrix">
+  <span class="eyebrow">Example, made-up brand</span>
+  <h2 id="h-matrix">The gap matrix</h2>
+  <p class="lede">Most audited accounts have one or two cells live. <code>angle-bank</code> draws this from the brand's own data each month and ranks the empty cells by how many different customers said it.</p>
+  <div class="scroll">
+    <table aria-label="Example gap matrix: angles by awareness level">
+      <thead><tr><th>Angle (one line)</th><th>Unaware</th><th>Problem</th><th>Solution</th><th>Product</th><th>Most aware</th></tr></thead>
+      <tbody id="matrix"></tbody>
+    </table>
+  </div>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--won)"></i>Won</span>
+    <span><i class="dot" style="background:var(--live)"></i>Live</span>
+    <span><i class="dot" style="background:var(--lost)"></i>Tried, lost</span>
+    <span><i class="dot" style="background:var(--stop)"></i>Gap with strong evidence: test next</span>
+  </div>
+</section>
+
+<section aria-labelledby="h-name">
+  <span class="eyebrow">Closing the loop</span>
+  <h2 id="h-name">Name the ad, and the data reads itself</h2>
+  <p class="lede">The convention lives in <code>system/ad-naming-convention.md</code>. A brand with its own convention keeps it and maps it once in <code>running-notes/ad-naming.md</code>.</p>
+  <form class="builder" id="builder" autocomplete="off">
+    <div class="bgrid" id="bgrid"></div>
+    <div class="out">
+      <output id="adname" for="bgrid" aria-live="polite"></output>
+      <button type="button" class="btn" id="copy">Copy name</button>
+    </div>
+  </form>
+</section>
+
+<section aria-labelledby="h-vocab">
+  <span class="eyebrow">One set of words</span>
+  <h2 id="h-vocab">Shared vocabulary</h2>
+  <div class="vocab" id="vocab"></div>
+  <p class="note">Full definitions and the analysis frameworks (LF8, NESB, valence and intensity, sophistication levels): <code>creative-strategy-context/creative-vocabulary.md</code>.</p>
+</section>
+
+<section aria-labelledby="h-files">
+  <span class="eyebrow">Where it lives</span>
+  <h2 id="h-files">Files in the brand's brain</h2>
+  <div class="files" id="files"></div>
+</section>
+
+<footer>Brand-brain factory. Generated for release v20 (7 Nov 2026). Update this page when a release changes the workflow (<code>improve-factory</code>, visual-map process).</footer>
+</div>
+
+<script>
+const STAGES = [
+ {n:"0", t:"Access and measurement", d:"day 0-2", skills:["account-playbook stage-0-access","ad-account-analysis measurement-check","creative-leaderboard naming-setup"],
+  do:["Connect the ad account read-only: Meta's Ads MCP with ads_read only, or an ad-level export","Fill tool-map.md","Check the pixel and Conversions API before reading any result","Confirm the winner definition, north star and naming"],
+  out:["tool-map.md","audits/measurement-check-<date>.md","running-notes/brand-rules.md (winner, north star)","running-notes/ad-naming.md"],
+  stop:"The brand gives access. Claude never asks for ads_management, and the token never goes in a repo.",
+  exit:"Numbers in Meta and the store roughly agree, and a winner has a written definition.",
+  say:"First we check the numbers are counted right, so every decision after this stands on solid ground."},
+ {n:"1", t:"Account read", d:"day 1-3", skills:["ad-account-analysis account-audit"],
+  do:["Last 90 days: what spends, what converts, what fatigues","Account structure against the full-funnel playbook","Spend level sets the creative volume per month"],
+  out:["audits/<YYYY-MM>/account-audit-<date>.md"], stop:"", exit:"Top spenders known, with a verdict on each.",
+  say:"Here is where your money goes today and which ads earn it."},
+ {n:"2", t:"Winner breakdowns", d:"day 2-5", skills:["ad-breakdown batch-winners"],
+  do:["The strategist writes their own read first","Top 10 winners: transcript and tags; the top 3 in full","What did the account actually scale on? Often 1-3 angles"],
+  out:["audits/breakdowns/","angle-bank/ad-tags.csv"], stop:"Strategist's hypothesis before the AI read.", exit:"Every winner tagged by angle, persona and awareness.",
+  say:"Your account grew on these few messages. Here is why each one works."},
+ {n:"3", t:"Market mining and personas", d:"day 3-10", skills:["angle-bank mine-market","research-map","persona-gap Mode A and B"],
+  do:["Reviews, Reddit, comments, support tickets, surveys: word for word","Personas by trigger moment, ranked by evidence","Every ad counted against the personas"],
+  out:["source-pulls/","research-map/map.html","personas/personas-profile.md"], stop:"A person approves the quote groups.", exit:"Personas with evidence counts; a quote bank with sources.",
+  say:"This is what your customers say, in their own words, and who you are missing."},
+ {n:"4", t:"Angle bank and gap matrix", d:"day 7-12", skills:["angle-bank build-bank","angle-bank map-account","angle-bank gap-matrix"],
+  do:["One line per angle, tagged by persona and awareness","Angles against awareness levels, persona against awareness","Rank the empty cells: evidence, persona size, roadmap fit"],
+  out:["angle-bank/angles.csv","angle-bank/gap-matrix-<date>.html"], stop:"The strategist agrees the top 5 gaps or changes them.", exit:"Top 5 gaps, each written as a test.",
+  say:"These are the messages your buyers have never heard from you."},
+ {n:"5", t:"Strategy and test plan", d:"day 10-14", skills:["strategic roadmap prompts","angle-bank next-tests","evaluate-ideas","sprint plan"],
+  do:["Pick the gaps to test","Size the sprint from the creative volume","Test setup and budget split"],
+  out:["strategy/strategic-roadmap.md","idea-bank/concepts.md","sprints/<date>-<slug>/sprint-plan.md"], stop:"The strategist approves the plan and the budget. Prices before any spend.", exit:"An approved sprint with named concepts.",
+  say:"Here is the plan for the next round and what it costs."},
+ {n:"6", t:"Make", d:"week 2-4", skills:["scriptwriting","hooks","headlines","static-ads","video-edits","ai-ad-generation","brief-check","ad-policy-check"],
+  do:["Shape first: one of the five script shapes and the ladder's entry step","Voice second: spread voices so Meta sees different ads","New angle on a proven format; proven angle in a new format","Every ad named by the convention"],
+  out:["sprints/<sprint>/briefs/","sprints/<sprint>/ads/"], stop:"Copy approval, then the pick. Nothing launches without the team.", exit:"Approved, policy-checked ads with parseable names.",
+  say:"New ads for the angles we found, ready for your team to launch."},
+ {n:"7", t:"Weekly loop", d:"from week 3", skills:["creative-leaderboard","weekly-creative-report","iterations","ad-breakdown"],
+  do:["Rank the week by angle, persona, format, voice","The shareable report for the client","Iterate on winners; break down the best and worst","Move angle statuses"],
+  out:["audits/leaderboard/<YYYY-Www>.html","audits/<YYYY-MM>/weekly-creative-report-<week>.html","angle-bank/angles.csv (statuses)"], stop:"The report is reviewed before it goes out.", exit:"Next batch planned from what won.",
+  say:"What won this week, why, and what we make next."},
+ {n:"8", t:"Monthly loop and 90-day review", d:"every month", skills:["angle-bank map-account + gap-matrix","persona-gap","refresh-context","growth-plan"],
+  do:["Redraw the gap matrix","Refresh personas and stale docs","Day 90: did the gap picks win? Log it"],
+  out:["angle-bank/gap-matrix-<date>.html","personas/personas-profile.md","the day-90 line in angle-bank feedback"], stop:"The strategist approves any change to the roadmap.", exit:"More than three angles carry winner spend.",
+  say:"Your account now scales on more messages than when we started."}
+];
+const rail=document.getElementById("rail"), sheet=document.getElementById("sheet");
+function li(a){return a.map(x=>`<li>${x}</li>`).join("")}
+function show(i){
+  const s=STAGES[i];
+  [...rail.querySelectorAll("button")].forEach((b,j)=>b.setAttribute("aria-selected", j===i));
+  sheet.innerHTML=`<div class="sheet-head"><span class="eyebrow">Stage ${s.n} &middot; ${s.d}</span><h3 style="font-size:1.4rem">${s.t}</h3></div>
+   <div class="chips">${s.skills.map(k=>`<span class="chip">${k}</span>`).join("")}</div>
+   <div class="grid2"><div class="field"><h4>What happens</h4><ul>${li(s.do)}</ul></div>
+   <div class="field"><h4>Output in the brain</h4><ul>${s.out.map(o=>`<li class="file">${o}</li>`).join("")}</ul><h4 style="margin-top:8px">Done when</h4><p>${s.exit}</p></div></div>
+   ${s.stop?`<div class="stop"><b>Stop.</b> ${s.stop}</div>`:""}
+   <p class="say">To the client: "${s.say}"</p>`;
+  try{localStorage.setItem("playbook-stage", i)}catch(e){}
+}
+STAGES.forEach((s,i)=>{
+  const b=document.createElement("button"); b.type="button"; b.setAttribute("role","tab");
+  b.innerHTML=`<span class="num">${s.n.padStart(2,"0")}</span><span><span class="t">${s.t}</span><br><span class="d">${s.d}</span></span>`;
+  b.addEventListener("click",()=>show(i));
+  b.addEventListener("keydown",e=>{if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();const k=(i+(e.key==="ArrowDown"?1:-1)+STAGES.length)%STAGES.length;show(k);rail.querySelectorAll("button")[k].focus()}});
+  const l=document.createElement("li"); l.appendChild(b); rail.appendChild(l);
+});
+let start=0; try{const v=+localStorage.getItem("playbook-stage"); if(v>=0&&v<STAGES.length) start=v}catch(e){}
+show(start);
+
+// Loop nodes
+const LOOP=[["Launch","named ads"],["Leaderboard","weekly rank"],["Breakdown","guess first"],["Angle bank","statuses"],["Gap matrix","empty cells"],["Brief + make","shape, voice"],["Policy check","last gate"]];
+const g=document.getElementById("loopnodes");
+LOOP.forEach((n,i)=>{
+  const a=-Math.PI/2+i*2*Math.PI/LOOP.length, x=230+160*Math.cos(a), y=230+160*Math.sin(a);
+  const stop=i===0||i===6;
+  g.insertAdjacentHTML("beforeend",`<circle cx="${x}" cy="${y}" r="38" style="fill:var(--surface);stroke:${stop?'var(--stop)':'var(--accent)'};stroke-width:2"/>
+   <text x="${x}" y="${y-2}" text-anchor="middle" style="font-weight:600">${n[0]}</text><text x="${x}" y="${y+13}" text-anchor="middle" class="small">${n[1]}</text>`);
+  const a2=a+Math.PI/LOOP.length, ax=230+160*Math.cos(a2), ay=230+160*Math.sin(a2), rot=a2*180/Math.PI+90;
+  g.insertAdjacentHTML("beforeend",`<path d="M -6 -5 L 4 0 L -6 5 Z" style="fill:var(--muted)" transform="translate(${ax} ${ay}) rotate(${rot-90})"/>`);
+});
+
+// Ladder
+const RUNGS=["Unaware hook","Education","Problem intro","Problem agitation","Failed solutions","Solution intro","Failed products","Product intro","Benefits, USPs, proof","Vision state","CTA"];
+const LEVELS=[["UN","Unaware",1,"Start with a hook for someone who doesn't know they have the problem, then teach. Teaching scripts need time: winners that named the product late ran about 84 seconds."],
+ ["PA","Problem aware",3,"They feel the problem. Open on it in their words, agitate, then show why what they tried failed."],
+ ["SA","Solution aware",5,"They know solutions exist. Start with why those solutions fail, then your mechanism."],
+ ["PR","Product aware",7,"They know products like yours. Start with why the other products fail, then yours, with proof."],
+ ["MA","Most aware",9,"They know you. Proof, the vision, the offer, the call to action."]];
+const seg=document.getElementById("seg"), lad=document.getElementById("ladder"), lnote=document.getElementById("laddernote");
+RUNGS.forEach((r,i)=>lad.insertAdjacentHTML("beforeend",`<div class="rung" data-i="${i+1}"><span class="n">${i+1}</span><span class="l">${r}</span></div>`));
+function lvl(k){
+  const L=LEVELS[k];
+  seg.querySelectorAll("button").forEach((b,j)=>b.setAttribute("aria-pressed", j===k));
+  lad.querySelectorAll(".rung").forEach(el=>{const i=+el.dataset.i; el.classList.toggle("off", i<L[2]); el.classList.toggle("start", i===L[2])});
+  lnote.textContent=`${L[1]} (${L[0]}): start at step ${L[2]}. ${L[3]}`;
+}
+LEVELS.forEach((L,k)=>{const b=document.createElement("button"); b.type="button"; b.textContent=L[1]; b.addEventListener("click",()=>lvl(k)); seg.appendChild(b)});
+lvl(1);
+
+// Matrix (made-up example)
+const M=[["A01 Your pillow is why your neck hurts","\"I wake up with my neck locked\" · 41 people",["none","won","live","none","none"]],
+ ["A02 Memory foam goes flat in a year","\"third pillow this year\" · 28 people",["none","gap","won","live","none"]],
+ ["A03 Sleep like you did at 25","\"I used to sleep through anything\" · 19 people",["gap","none","none","none","none"]],
+ ["A04 Side sleepers need a different height","\"nothing fits side sleepers\" · 33 people",["none","gap","none","lost","none"]],
+ ["A05 100-night trial, no risk","\"scared to waste money again\" · 12 people",["none","none","none","live","won"]]];
+const lab={none:"never tried",won:"won",live:"live",lost:"lost",gap:"test next"};
+document.getElementById("matrix").innerHTML=M.map(r=>`<tr><td class="a">${r[0]}<span class="q">${r[1]}</span></td>${r[2].map(c=>`<td class="cell c-${c}">${lab[c]}</td>`).join("")}</tr>`).join("");
+
+// Name builder
+const F=[["date","Launch date",null],["concept","Concept",["C07","C08","C12","x"]],["angle","Angle",["A01","A02","A03","A04","x"]],["persona","Persona",["P1","P2","P3","x"]],
+ ["awareness","Awareness",["UN","PA","SA","PR","MA"]],["format","Format",["ugc-talk","podcast","street","skit","vsl","ai-anim","ai-avatar","song","demo","founder-talk","static-benefit","static-compare","static-review","static-native","static-offer","carousel","motion"]],
+ ["voice","Voice",["creator","expert","customer","founder","vo","song","skit","ai","none"]],["shape","Shape",["symptom","enemy","story","objection","authority","offer","other"]],
+ ["hook","Hook variant",["H1","H2","H3","H4"]],["ver","Version",["v1","v2","v3"]]];
+const bg=document.getElementById("bgrid"), out=document.getElementById("adname");
+const today=new Date(); const yymmdd=String(today.getFullYear()).slice(2)+String(today.getMonth()+1).padStart(2,"0")+String(today.getDate()).padStart(2,"0");
+F.forEach(([id,label,opts],k)=>{
+  const ctl = opts ? `<select id="f-${id}">${opts.map((o,j)=>`<option${(id==="awareness"&&o==="PA")||(id==="shape"&&o==="enemy")||(id==="angle"&&o==="A02")||(id==="persona"&&o==="P2")?" selected":""}>${o}</option>`).join("")}</select>`
+                   : `<input id="f-${id}" value="${yymmdd}" inputmode="numeric" maxlength="6" pattern="[0-9]{6}">`;
+  bg.insertAdjacentHTML("beforeend",`<label for="f-${id}">${label}${ctl}</label>`);
+});
+function build(){out.textContent=F.map(([id])=>document.getElementById("f-"+id).value.trim().replace(/[\s_]+/g,"-")||"x").join("_")}
+bg.addEventListener("input",build); build();
+document.getElementById("copy").addEventListener("click",()=>{
+  const t=out.textContent, btn=document.getElementById("copy");
+  const ok=()=>{btn.textContent="Copied"; setTimeout(()=>btn.textContent="Copy name",1400)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok).catch(sel)} else sel();
+  function sel(){const r=document.createRange(); r.selectNodeContents(out); const s=getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent="Selected: press Ctrl+C"}
+});
+
+// Vocabulary
+const V=[["Angle","The reason to buy you lead with. One problem, desire or belief. If it takes a paragraph, it isn't one yet."],
+ ["Format","What the creative looks like: podcast clip, B-roll VSL, AI animation, static with a benefit headline."],
+ ["Structure","The order of the parts: hook, problem, failed solution, mechanism, proof, offer, CTA."],
+ ["Concept","Angle + format + structure. Change any one and it's a new concept."],
+ ["Persona","One version of the avatar: same problem, different situation and motive."],
+ ["Mechanism","UMP: the root cause of the problem. UMS: how the product fixes that exact cause."],
+ ["Awareness","How much they know about the problem and the solutions. Sets where the script starts."],
+ ["Sophistication","How many similar claims the market has already heard."],
+ ["Funnel stage","How warm they are to your brand. TOF, MOF, BOF."],
+ ["Enemy","The specific thing the viewer uses now that gets blamed first."],
+ ["Landing page","Any first page after the click. A pre-sell page (listicle, advertorial, quiz) is a kind of landing page."],
+ ["Native ad","On Meta: long primary text with a raw, organic-looking image. Also the native networks."]];
+document.getElementById("vocab").innerHTML=V.map(v=>`<div class="term"><b>${v[0]}</b><span>${v[1]}</span></div>`).join("");
+
+// Files
+const FILES=[["running-notes/playbook-status.md","Where the playbook stands, the next action, open stops"],
+ ["angle-bank/angles.csv","Every angle: one line, persona, awareness, enemy, mechanism, best quote, evidence"],
+ ["angle-bank/ad-tags.csv","Every ad with its tags and numbers"],
+ ["angle-bank/gap-matrix-<date>.html","The monthly matrix"],
+ ["audits/breakdowns/","One file per broken-down ad, with the strategist's guess beside the AI read"],
+ ["audits/leaderboard/<week>.html","The weekly ranking"],
+ ["personas/personas-profile.md","Trigger-based personas with evidence counts"],
+ ["idea-bank/concepts.md","Concept IDs every ad name carries"]];
+document.getElementById("files").innerHTML=FILES.map(f=>`<div><code>${f[0]}</code><span>${f[1]}</span></div>`).join("");
+</script>

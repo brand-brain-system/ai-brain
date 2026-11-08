@@ -1,0 +1,594 @@
+{
+  "library": "landing-page-swipe-file 2026-09-29, trimmed 2026-10-01 (8 Parker accounts, 14 pages); plus 1 Parker house build (tpj-gruns-1, 2026-10-01)",
+  "swipe_file": "../swipe-file",
+  "built": "2026-09-30",
+  "owner": "Alex Cooper",
+  "templates": [
+    {
+      "id": "lp-01",
+      "name": "Reasons-why listicle",
+      "slug": "reasons-listicle",
+      "use_when": "Many creators and angles feed one page, and the buyer needs several reasons, not one. Works for Exploration into early Evaluation.",
+      "teep": "Exploration to Evaluation",
+      "requires": [
+        "offer",
+        "product_benefits",
+        "product_page_or_checkout_url"
+      ],
+      "nice_to_have": [
+        "reviews",
+        "customer_count",
+        "rival_comparison",
+        "expert_or_author",
+        "guarantee"
+      ],
+      "urgency_device": false,
+      "story": "A numbered article that feels like content. Each reason is one benefit with one piece of proof and its own button, so a reader can leave for the product at the moment they are convinced. The Perfect Jean sends most of its traffic to a standalone 10 reasons page; Rugiet runs the same template for two products; mindbodygreen makes the last reason \"results build over months\" to sell the bigger plan.",
+      "refs": [
+        {
+          "slug": "rugiet-2",
+          "brand": "Rugiet",
+          "url": "https://get.rugiet.com/ready",
+          "file": "rugiet.md"
+        },
+        {
+          "slug": "mindbodygreen-1",
+          "brand": "mindbodygreen",
+          "url": "https://shop.mindbodygreen.com/pages/lp-magnesium-listicle",
+          "file": "mindbodygreen.md"
+        },
+        {
+          "slug": "tpj-2",
+          "brand": "The Perfect Jean",
+          "url": "https://theperfectjean.nyc/pages/5-reasons-why-to-try-the-perfect-jean",
+          "file": "the-perfect-jean.md"
+        },
+        {
+          "slug": "tpj-gruns-1",
+          "brand": "The Perfect Jean (Parker build, Grüns style)",
+          "url": "pages/tpj-gruns-1.html",
+          "file": "the-perfect-jean.md",
+          "house_build": true,
+          "design_kit": "assets/designs/tpj-gruns-1/"
+        }
+      ],
+      "sections": [
+        {
+          "id": "s01",
+          "type": "offer_bar",
+          "required": true,
+          "job": "State the discount and that it is already applied",
+          "guide": "text: 6-12 words"
+        },
+        {
+          "id": "s02",
+          "type": "byline",
+          "required": false,
+          "job": "Make it read like an article from a real person",
+          "guide": "name, title (relatable, 2-6 words), updated (month year); only a real author or the brand's own editorial name"
+        },
+        {
+          "id": "s03",
+          "type": "hero",
+          "required": true,
+          "job": "Headline that states the page's promise as N reasons (the named ad's promise, when there is one)",
+          "guide": "headline: \"N reasons [who] [love/switched to] [product]\" or \"Why [expert type] recommend [product] for [problem]\", 6-14 words, in the buyer's words (keep the ad's voice when an ad is named); subhead: one-line product truth, 10-20 words; bullets: 3 proof points of 3-8 words; cta: 2-5 words; image: product in use"
+        },
+        {
+          "id": "s04",
+          "type": "comparison_table",
+          "required": false,
+          "job": "Show the win against named or typical rivals at a glance",
+          "guide": "columns: criterion + us + 1-2 rivals; 4-6 rows of short cells; note: one-line TL;DR, 8-20 words; only true, sourced rival facts"
+        },
+        {
+          "id": "s05",
+          "type": "numbered_reasons",
+          "required": true,
+          "job": "One benefit, one proof, one button per reason",
+          "guide": "5-10 items; title 4-10 words; body 25-60 words with one number or proof; cta 2-5 words, a different verb each time; order: core benefit or speed first, fit or range, reviews and repeat buying, guarantee, lasting results, price vs rivals, zero risk or social payoff last"
+        },
+        {
+          "id": "s06",
+          "type": "stat_strip",
+          "required": false,
+          "job": "One big proof number and a short quote",
+          "guide": "1-3 items: number (allowlisted) + label 2-6 words"
+        },
+        {
+          "id": "s07",
+          "type": "press_bar",
+          "required": false,
+          "job": "Borrow authority",
+          "guide": "only real press or institutions on record"
+        },
+        {
+          "id": "s08",
+          "type": "buy_box",
+          "required": true,
+          "job": "Close with the offer, what's included and the risk reversal",
+          "guide": "product_name; options 1-3 (plan or bundle) with price and anchor from the allowlist; includes 3-6 items; gifts only if real; cta 2-5 words; guarantee 6-15 words"
+        },
+        {
+          "id": "s09",
+          "type": "reviews",
+          "required": false,
+          "job": "Short headlined reviews",
+          "guide": "3-5 verbatim sourced reviews"
+        },
+        {
+          "id": "s10",
+          "type": "faq",
+          "required": true,
+          "job": "Answer the last objections",
+          "guide": "4-6 Q&A; answers 15-45 words"
+        },
+        {
+          "id": "s11",
+          "type": "sticky_cta",
+          "required": true,
+          "job": "Keep the claim button in reach",
+          "guide": "text 4-8 words (discount active); cta 2-4 words"
+        }
+      ],
+      "adaptation": "No named rivals on record: compare against \"typical [category]\" with facts the brand can back, or drop the table. No author: drop the byline rather than invent one. A brand with one strong reason should not use this template.",
+      "watch_outs": "Every button goes to one link with the discount already applied. Standalone (no site menu) beat on-store at The Perfect Jean. Review counts must match across the ad and the page (TPJ showed four different counts)."
+    },
+    {
+      "id": "lp-02",
+      "name": "Founder-story long page",
+      "slug": "founder-long-page",
+      "use_when": "Problem-aware, older buyers who have tried everything; the product has a mechanism story and the founder is the proof. Clone it per symptom or audience.",
+      "teep": "Trigger to Evaluation",
+      "requires": [
+        "founder_story",
+        "mechanism",
+        "offer",
+        "product_page_or_checkout_url"
+      ],
+      "nice_to_have": [
+        "reviews",
+        "before_after",
+        "result_timeline",
+        "comparison_alternative",
+        "guarantee"
+      ],
+      "urgency_device": true,
+      "story": "A long sales letter that sits in the problem first. The founder lived it, tried everything the reader has tried, found the mechanism, and turned it into an easy form. Proof, a timeline, who it is not for, and a buy box that prices every freebie. Primal Queen puts over half its top spend behind one of these and clones it for each symptom.",
+      "refs": [
+        {
+          "slug": "primal-queen-1",
+          "brand": "Primal Queen",
+          "url": "https://primalqueen.com/pages/tiktok",
+          "file": "primal-queen.md"
+        },
+        {
+          "slug": "primal-queen-3",
+          "brand": "Primal Queen",
+          "url": "https://primalqueen.com/pages/marrow",
+          "file": "primal-queen.md"
+        }
+      ],
+      "sections": [
+        {
+          "id": "s01",
+          "type": "offer_bar",
+          "required": true,
+          "job": "Name the offer (and its end, if urgency is allowed)",
+          "guide": "text 6-12 words; countdown only if urgency_allowed and the date is real"
+        },
+        {
+          "id": "s02",
+          "type": "hero",
+          "required": true,
+          "job": "Name 2-3 symptoms the reader lives with, promise the easy form",
+          "guide": "headline 8-16 words naming symptoms; subhead 12-25 words (old answer, new format); cta 2-5 words; trust: customer count, rating, guarantee length, shipping (allowlisted); image: product or founder with product"
+        },
+        {
+          "id": "s03",
+          "type": "reviews",
+          "required": false,
+          "job": "Five one-line wins, each a different benefit",
+          "guide": "3-5 verbatim short quotes"
+        },
+        {
+          "id": "s04",
+          "type": "founder_note",
+          "required": true,
+          "job": "Who I am and what it cost me",
+          "guide": "heading 4-10 words; 2-4 paragraphs of 30-70 words; one specific scene"
+        },
+        {
+          "id": "s05",
+          "type": "text",
+          "required": true,
+          "job": "\"I tried everything\": the alternatives the reader has tried",
+          "guide": "heading 3-8 words; list the 5-8 alternatives in one or two paragraphs"
+        },
+        {
+          "id": "s06",
+          "type": "text",
+          "required": true,
+          "job": "The mechanism, and why you can't just take it raw",
+          "guide": "heading 4-10 words; 2-3 paragraphs, 30-70 words each"
+        },
+        {
+          "id": "s07",
+          "type": "stat_strip",
+          "required": false,
+          "job": "Proof by numbers",
+          "guide": "2-4 allowlisted numbers with labels"
+        },
+        {
+          "id": "s08",
+          "type": "timeline",
+          "required": false,
+          "job": "What to expect and when",
+          "guide": "4-5 steps (1 week, 1 month, 3, 6 months); what 6-16 words each; only claims the brand may make"
+        },
+        {
+          "id": "s09",
+          "type": "comparison_table",
+          "required": false,
+          "job": "Us vs the common alternative",
+          "guide": "5-10 rows"
+        },
+        {
+          "id": "s10",
+          "type": "who_for",
+          "required": true,
+          "job": "Who it's for and who it's not for",
+          "guide": "for: 3-4 items; not_for: 2 items; each 4-12 words"
+        },
+        {
+          "id": "s11",
+          "type": "buy_box",
+          "required": true,
+          "job": "Subscription default, every freebie priced, guarantee",
+          "guide": "options 1-3; gifts with dollar values only if real; guarantee 6-15 words; cta 2-5 words"
+        },
+        {
+          "id": "s12",
+          "type": "faq",
+          "required": true,
+          "job": "Safety, fit with other products, sourcing, timing, guarantee",
+          "guide": "6-10 Q&A"
+        },
+        {
+          "id": "s13",
+          "type": "cta_block",
+          "required": true,
+          "job": "Founder sign-off: a month from now",
+          "guide": "heading 4-10 words; body 25-60 words; cta 2-5 words"
+        }
+      ],
+      "adaptation": "No founder story on record: this template is the wrong pick, use lp-03 (first-person) or lp-01. No before/after rights: drop it, never simulate. Urgency banned: the offer bar states the offer without a clock.",
+      "watch_outs": "Long pages suit 45+ buyers who read; keep sentences plain. Health brands keep every claim inside the approved wording."
+    },
+    {
+      "id": "lp-03",
+      "name": "Advertorial",
+      "slug": "advertorial",
+      "use_when": "There is a known rival to beat, or the audience trusts editorial more than ads. Head-to-head rounds or an \"I tried it\" first-person story.",
+      "teep": "Exploration to Evaluation",
+      "requires": [
+        "rival_or_story",
+        "offer",
+        "product_page_or_checkout_url"
+      ],
+      "nice_to_have": [
+        "expert_reviewer",
+        "reviews",
+        "price_per_use",
+        "sources"
+      ],
+      "urgency_device": false,
+      "story": "It looks like an article. A byline, a disclosure, a problem the reader recognises, then either rounds against the rivals with a winner after each, or a first-person story from doubt to result. Every round or turn ends with a button carrying the code. Rugiet runs several of these on review-style sites.",
+      "refs": [
+        {
+          "slug": "rugiet-3",
+          "brand": "Rugiet",
+          "url": "https://www.thecustomerdigest.com/post/rugiet-ready-vs-ro-sparks-vs-hims-hard-mints-vs-bluechew",
+          "file": "rugiet.md"
+        },
+        {
+          "slug": "harrys-3",
+          "brand": "Harry's",
+          "url": "https://www.thequalityedit.com/articles/harrys-tattoo-frost-vs-hustle-butter-comparison",
+          "file": "harrys.md"
+        },
+        {
+          "slug": "honeylove-3",
+          "brand": "Honeylove",
+          "url": "https://www.popdust.com/i-tried-honeyloves-crossover-bra-heres-my-honest-take-2665043503",
+          "file": "honeylove.md"
+        }
+      ],
+      "sections": [
+        {
+          "id": "s01",
+          "type": "disclosure",
+          "required": true,
+          "job": "Label it honestly",
+          "guide": "Sponsored / advertorial line and partnership disclosure"
+        },
+        {
+          "id": "s02",
+          "type": "byline",
+          "required": true,
+          "job": "A real writer or reviewer",
+          "guide": "name, title, updated; reviewer only if a real named expert reviewed it"
+        },
+        {
+          "id": "s03",
+          "type": "hero",
+          "required": true,
+          "job": "Article headline in the reader's words",
+          "guide": "headline: \"[You] vs [Rival]: which [category] actually works?\" or \"I tried [product] for [problem]\", 8-16 words; subhead 10-25 words; image"
+        },
+        {
+          "id": "s04",
+          "type": "verdict",
+          "required": false,
+          "job": "Top pick box up front",
+          "guide": "heading 2-6 words; points 2-3 of 4-10 words; cta with the code"
+        },
+        {
+          "id": "s05",
+          "type": "text",
+          "required": true,
+          "job": "Intro: how common the problem is and who tested",
+          "guide": "2-3 paragraphs, 30-70 words; any stat sourced"
+        },
+        {
+          "id": "s06",
+          "type": "benefits",
+          "required": false,
+          "job": "What to look for: criteria that match the product's mechanism",
+          "guide": "2-3 criteria, title 3-8 words, body 15-35 words"
+        },
+        {
+          "id": "s07",
+          "type": "comparison_table",
+          "required": false,
+          "job": "Side by side, winner highlighted",
+          "guide": "3-6 rows; only true rival facts"
+        },
+        {
+          "id": "s08",
+          "type": "rounds",
+          "required": true,
+          "job": "Rounds (head-to-head) or story beats (first person), each ending in a button",
+          "guide": "3-5 items: title 3-8 words; body 40-90 words; winner line 3-10 words (head-to-head only; concede one honest tie); cta 2-5 words"
+        },
+        {
+          "id": "s09",
+          "type": "verdict",
+          "required": true,
+          "job": "Overall winner or result",
+          "guide": "heading 3-8 words; points 3 of 5-12 words; cta"
+        },
+        {
+          "id": "s10",
+          "type": "faq",
+          "required": false,
+          "job": "Search-style questions",
+          "guide": "3-5 Q&A"
+        }
+      ],
+      "adaptation": "First-person mode: rounds become beats (the problem, failed fixes, discovery, doubt, first use, a full-day test, result) with no winner lines. No real writer or reviewer: use the brand's own editorial name and say so in the disclosure; never invent a person.",
+      "watch_outs": "The article must cover the same product and angle as the ad (Honeylove's Popdust piece did not). Rival claims must be sourced and current; date the comparison."
+    },
+    {
+      "id": "lp-04",
+      "name": "Product page built for ads",
+      "slug": "ad-product-page",
+      "use_when": "The buyer already wants the category. The decision happens in the buy box, so put the offer and the risk reversal there, on an ad-only URL or price.",
+      "teep": "Evaluation to Purchase",
+      "requires": [
+        "product",
+        "price",
+        "product_page_or_checkout_url"
+      ],
+      "nice_to_have": [
+        "risk_reversal",
+        "reviews",
+        "clinical_or_proof",
+        "press",
+        "founder_note"
+      ],
+      "urgency_device": false,
+      "story": "Not the store's product page: a custom version with the buy box at the top, an ad-only price or offer, a risk reversal under the button, and proof blocks in the order a nervous first-time buyer needs them. Honeylove and Laura Geller each put their biggest page spend behind one.",
+      "refs": [
+        {
+          "slug": "honeylove-1",
+          "brand": "Honeylove",
+          "url": "https://www.honeylove.com/pages/crossover-bra",
+          "file": "honeylove.md"
+        }
+      ],
+      "sections": [
+        {
+          "id": "s01",
+          "type": "offer_bar",
+          "required": true,
+          "job": "The exact offer or code (the named ad's, when there is one)",
+          "guide": "text 6-12 words"
+        },
+        {
+          "id": "s02",
+          "type": "buy_box",
+          "required": true,
+          "job": "Hero buy box: name, what's inside, rating, anchor to ad price, options, risk reversal",
+          "guide": "heading: product name + category claim 4-10 words; rating_line allowlisted; options 1-3; includes 3-5; guarantee or try-first line 6-15 words; cta 2-4 words; image"
+        },
+        {
+          "id": "s03",
+          "type": "benefits",
+          "required": true,
+          "job": "\"Perfect for\": 3-4 buyer problems in their words",
+          "guide": "3-4 items, title 3-8 words, body 10-25 words"
+        },
+        {
+          "id": "s04",
+          "type": "press_bar",
+          "required": false,
+          "job": "Press or awards on record",
+          "guide": "names only"
+        },
+        {
+          "id": "s05",
+          "type": "comparison_table",
+          "required": false,
+          "job": "Us vs an unnamed typical competitor",
+          "guide": "4-6 rows"
+        },
+        {
+          "id": "s06",
+          "type": "stat_strip",
+          "required": false,
+          "job": "Clinical or testing proof",
+          "guide": "2-3 allowlisted stats with timeframe labels"
+        },
+        {
+          "id": "s07",
+          "type": "timeline",
+          "required": false,
+          "job": "Results timeline",
+          "guide": "3 steps (week 1, week 4, week 12)"
+        },
+        {
+          "id": "s08",
+          "type": "founder_note",
+          "required": false,
+          "job": "Why I made this / why we let you try it",
+          "guide": "1-2 paragraphs, 30-60 words; signoff"
+        },
+        {
+          "id": "s09",
+          "type": "reviews",
+          "required": true,
+          "job": "Reviews, ideally tagged by time used",
+          "guide": "3-6 verbatim"
+        },
+        {
+          "id": "s10",
+          "type": "faq",
+          "required": true,
+          "job": "Choosing the variant, will it suit me, how to use, returns",
+          "guide": "4-6 Q&A"
+        }
+      ],
+      "adaptation": "No ad-only price: the offer bar carries the ad's code or offer instead. No risk reversal: use the standard guarantee; never invent a trial.",
+      "watch_outs": "The offer on the page must match the ad exactly (Open Farm's ad promised WELCOME20; the page never showed it)."
+    },
+    {
+      "id": "lp-05",
+      "name": "Offer lander",
+      "slug": "offer-lander",
+      "use_when": "The ad sells a specific trial, free gift or limited drop. The headline is the offer, word for word.",
+      "teep": "Purchase",
+      "requires": [
+        "offer",
+        "price",
+        "product_page_or_checkout_url"
+      ],
+      "nice_to_have": [
+        "rival_price",
+        "reviews",
+        "clinical_or_proof",
+        "gift_options"
+      ],
+      "urgency_device": false,
+      "story": "A short, standalone page that opens on the ad's own value line and sells one offer: a $10 trial, a product plus a free gift, a limited variant. Harry's runs at least four test versions behind one URL; Laura Geller's version drops the site menu entirely.",
+      "refs": [
+        {
+          "slug": "laura-geller-2",
+          "brand": "Laura Geller",
+          "url": "https://shop.laurageller.com/bsk-pro-aging-essentials",
+          "file": "laura-geller.md"
+        },
+        {
+          "slug": "gruns-2",
+          "brand": "Grüns",
+          "url": "https://gruns.co/pages/first-order-raspberry-lemonade",
+          "file": "gruns.md"
+        }
+      ],
+      "sections": [
+        {
+          "id": "s01",
+          "type": "offer_bar",
+          "required": true,
+          "job": "Review strip or offer line",
+          "guide": "text 5-12 words"
+        },
+        {
+          "id": "s02",
+          "type": "hero",
+          "required": true,
+          "job": "The offer's value line as the headline (the ad's own line, when an ad is named), the offer as the button",
+          "guide": "headline 4-10 words (the offer line, or the named ad's line); subhead 8-20 words (pain relief); cta names the offer, 3-6 words; trust: shipping and money-back; image: product or kit"
+        },
+        {
+          "id": "s03",
+          "type": "trust_row",
+          "required": true,
+          "job": "Four short promises",
+          "guide": "4 items, 2-5 words each"
+        },
+        {
+          "id": "s04",
+          "type": "who_for",
+          "required": false,
+          "job": "Who it's for: three specific frustrations",
+          "guide": "for: 3 items of 5-12 words; not_for optional"
+        },
+        {
+          "id": "s05",
+          "type": "buy_box",
+          "required": true,
+          "job": "Offer card: price, anchor, savings, what's in the kit or the gift choice",
+          "guide": "options 1-3; includes 3-6; gifts with values if real; cta 3-6 words"
+        },
+        {
+          "id": "s06",
+          "type": "stat_strip",
+          "required": false,
+          "job": "Headline proof stat",
+          "guide": "1-3 allowlisted"
+        },
+        {
+          "id": "s07",
+          "type": "comparison_table",
+          "required": false,
+          "job": "Price comparison vs a named rival, dated",
+          "guide": "3-5 rows; note carries the source and date"
+        },
+        {
+          "id": "s08",
+          "type": "reviews",
+          "required": false,
+          "job": "Three short reviews on the main pain",
+          "guide": "3 verbatim"
+        },
+        {
+          "id": "s09",
+          "type": "faq",
+          "required": true,
+          "job": "Offer terms and product questions",
+          "guide": "4-6 Q&A"
+        },
+        {
+          "id": "s10",
+          "type": "cta_block",
+          "required": true,
+          "job": "Final call to action with the price stack",
+          "guide": "heading 4-10 words; body 10-25 words; cta"
+        }
+      ],
+      "adaptation": "Limited drop: add the 'almost gone' line only if stock is really limited. Free-gift offer: the buy box lists gift options with their values.",
+      "watch_outs": "Test the page like an ad: Harry's rotates story, engineering and value versions behind one URL."
+    }
+  ]
+}

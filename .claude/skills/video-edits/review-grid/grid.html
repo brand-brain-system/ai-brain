@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit review</title>
+<style>
+  :root { --bg:#f6f6f4; --panel:#fff; --ink:#1b1b1b; --muted:#6b6b6b; --line:#dcdcd6; --accent:#194319; --soft:#e8efe8; --warn:#8a6100; --warnbg:#fff4d6; --qa:#2c5fa8; --hl:#ffd84d; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141414; --panel:#1e1e1e; --ink:#ececec; --muted:#9a9a9a; --line:#333; --accent:#7fbf7f; --soft:#22301f; --warn:#f0c060; --warnbg:#3a3010; --qa:#7fa8e6; --hl:#c9a300; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 system-ui, sans-serif; }
+  header { display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:12px 16px; border-bottom:1px solid var(--line); }
+  header h1 { font-size:17px; margin:0 12px 0 0; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .chip { font:inherit; padding:5px 12px; border:1px solid var(--line); background:transparent; color:var(--ink); border-radius:999px; cursor:pointer; }
+  .chip.on { background:var(--accent); border-color:var(--accent); color:var(--bg); }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; background:var(--muted); }
+  .dot.review { background:var(--muted); } .dot.notes { background:var(--warn); } .dot.approved { background:var(--accent); }
+  .chip.on .dot.approved { background:var(--bg); }
+  .badge { font-size:12px; margin-left:4px; opacity:.85; }
+  main { display:grid; grid-template-columns:minmax(0, 1fr) 380px; gap:16px; padding:16px; }
+  @media (max-width: 900px) { main { grid-template-columns:1fr; } }
+  .banner { background:var(--warnbg); color:var(--warn); border-radius:8px; padding:8px 12px; margin-bottom:10px; }
+  .banner button { margin-left:8px; }
+  .bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+  .bar .label { color:var(--muted); font-size:13px; }
+  .bar .spacer { flex:1; }
+  button.act { font:inherit; padding:6px 12px; border:1px solid var(--accent); background:transparent; color:var(--accent); border-radius:6px; cursor:pointer; }
+  button.act.primary { background:var(--accent); color:var(--bg); }
+  .stage { display:flex; gap:12px; justify-content:center; }
+  .stage figure { margin:0; flex:1; max-width:420px; }
+  .stage figcaption { color:var(--muted); font-size:13px; margin-bottom:4px; }
+  video { width:100%; max-height:68vh; background:#000; border-radius:8px; display:block; }
+  .words { text-align:center; margin:10px auto 0; max-width:560px; min-height:1.5em; font-size:16px; }
+  .words span { cursor:pointer; padding:0 1px; border-radius:3px; }
+  .words span.now { background:var(--hl); color:#111; }
+  .check { color:var(--muted); font-size:13px; margin:6px 0 0; }
+  .err { color:#b3261e; font-size:13px; }
+  aside { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px; align-self:start; }
+  aside h2 { font-size:14px; margin:0 0 6px; }
+  textarea { width:100%; font:inherit; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:8px; resize:vertical; }
+  .keys { color:var(--muted); font-size:12px; margin:6px 0 10px; line-height:1.8; }
+  kbd { border:1px solid var(--line); border-radius:4px; padding:0 4px; font-size:11px; }
+  .counts { display:flex; justify-content:space-between; color:var(--muted); font-size:13px; margin:12px 0 6px; border-top:1px solid var(--line); padding-top:10px; }
+  .note { border-left:3px solid var(--warn); padding:6px 8px; margin:8px 0; background:var(--bg); border-radius:0 6px 6px 0; }
+  .note.done { border-left-color:var(--accent); }
+  .note.dismissed { border-left-color:var(--line); opacity:.65; }
+  .note.qa { border-left-color:var(--qa); }
+  .note .meta { font-size:12px; color:var(--muted); display:flex; gap:6px; flex-wrap:wrap; }
+  .note .meta .t { color:var(--accent); cursor:pointer; text-decoration:underline; }
+  .note .meta .st { margin-left:auto; }
+  .note .said { font-size:13px; color:var(--muted); font-style:italic; margin-top:2px; }
+  .note .text { margin:3px 0; white-space:pre-wrap; }
+  .note .reply { font-size:14px; background:var(--soft); border-radius:6px; padding:6px 8px; margin-top:4px; white-space:pre-wrap; }
+  .note .reply b { font-size:12px; display:block; color:var(--muted); font-weight:600; }
+  .note .links button { font:inherit; font-size:12px; border:none; background:none; color:var(--muted); cursor:pointer; padding:0 8px 0 0; text-decoration:underline; }
+  .empty { color:var(--muted); font-size:14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Edit review</h1>
+  <div id="adTabs" class="row"></div>
+</header>
+<main>
+  <section>
+    <div id="banner" class="banner" hidden></div>
+    <div class="bar"><span class="label">hook</span><span id="hookTabs" class="row"></span></div>
+    <div class="bar">
+      <span class="label">version</span><span id="verTabs" class="row"></span>
+      <span class="spacer"></span>
+      <button class="act" id="compareBtn">Compare</button>
+      <button class="act primary" id="approveBtn">Approve</button>
+    </div>
+    <div class="stage" id="stage"></div>
+    <div class="words" id="words"></div>
+    <p class="check" id="checkText"></p>
+    <p class="check" id="flowHint"></p>
+  </section>
+  <aside>
+    <h2 id="noteLabel">Note at 0:00.0</h2>
+    <textarea id="noteText" rows="3" placeholder="What should change here?"></textarea>
+    <div class="row"><label><input type="checkbox" id="general"> general (holds for every ad, not just this one)</label></div>
+    <div class="keys"><kbd>N</kbd> new note (pauses) · <kbd>Enter</kbd> save · <kbd>Shift</kbd>+<kbd>Enter</kbd> new line · <kbd>Esc</kbd> back to the video<br>
+      <kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> 1 s (<kbd>Shift</kbd> 5 s) · <kbd>,</kbd><kbd>.</kbd> one frame · <kbd>1</kbd>-<kbd>9</kbd> hook</div>
+    <div class="counts"><span id="counts"></span><label><input type="checkbox" id="showDone" checked> show done</label></div>
+    <div id="notes"></div>
+  </aside>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = t => { const m = Math.floor(t / 60), s = t - m * 60; return m + ":" + s.toFixed(1).padStart(4, "0"); };
+const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+                set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+const FPS = 30;
+
+let S = null, ad = null, hook = null, ver = null, compare = false, seen = null, words = [], wordsFile = null;
+
+async function call(path, body) {
+  const opts = body ? { method: "POST", headers: { "Content-Type": "application/json", "X-Review-Page": "1" }, body: JSON.stringify(body) } : {};
+  const r = await fetch(path, opts);
+  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.status);
+  return r.json();
+}
+
+const curAd = () => S.ads.find(a => a.id === ad);
+const curHook = () => curAd().hooks.find(h => h.id === hook);
+const curVer = () => curHook().versions.find(x => x.v === ver);
+const video = () => document.querySelector("#stage video[data-main]");
+const other = () => document.querySelector("#stage video:not([data-main])");
+
+function update(state, first) {
+  S = state;
+  document.title = "Edit review: " + S.title;
+  if (first) {
+    const saved = store.get("review:" + S.title) || {};
+    const a = S.ads.find(x => x.id === saved.ad) || S.ads[0];
+    const h = a.hooks.find(x => x.id === saved.hook) || a.hooks[0];
+    ad = a.id; hook = h.id; ver = h.versions.some(x => x.v === saved.ver) ? saved.ver : h.latest;
+  }
+  if (!curAd() || !curHook()) { ad = S.ads[0].id; hook = S.ads[0].hooks[0].id; ver = S.ads[0].hooks[0].latest; first = true; }
+  // A version that appeared since the last look: say so, don't switch under the person.
+  const now = {};
+  S.ads.forEach(a => a.hooks.forEach(h => now[a.id + "/" + h.id] = h.versions.map(x => x.v)));
+  if (seen) {
+    const fresh = [];
+    Object.entries(now).forEach(([k, vs]) => vs.forEach(v => { if (!(seen[k] || []).includes(v)) fresh.push([k, v]); }));
+    if (fresh.length) {
+      const [k, v] = fresh[fresh.length - 1], [fa, fh] = k.split("/");
+      $("banner").innerHTML = `v${v} of ${esc(fa)} ${esc(fh)} is ready.<button class="act" id="openNew">Open it</button>`;
+      $("banner").hidden = false;
+      $("openNew").onclick = () => { ad = fa; hook = fh; ver = v; compare = false; $("banner").hidden = true; render(true); };
+    }
+  }
+  seen = now;
+  render(first);
+}
+
+function render(resetStage) {
+  if (!curVer()) { ver = curHook().latest; resetStage = true; }
+  store.set("review:" + S.title, { ad, hook, ver });
+  const a = curAd(), h = curHook();
+  $("adTabs").innerHTML = "";
+  S.ads.forEach(x => {
+    const open = x.hooks.reduce((n, y) => n + y.open, 0);
+    const st = x.hooks.every(y => y.status === "approved") ? "approved" : open ? "notes" : "review";
+    const b = document.createElement("button");
+    b.className = "chip" + (x.id === ad ? " on" : "");
+    b.innerHTML = `<span class="dot ${st}"></span>${esc(x.id)}<span class="badge">${x.hooks.length > 1 ? x.hooks.length + " hooks" : ""}${open ? " · " + open + " open" : ""}</span>`;
+    b.onclick = () => { ad = x.id; hook = x.hooks[0].id; ver = x.hooks[0].latest; compare = false; render(true); };
+    $("adTabs").appendChild(b);
+  });
+  $("hookTabs").innerHTML = "";
+  a.hooks.forEach((x, i) => {
+    const b = document.createElement("button");
+    b.className = "chip" + (x.id === hook ? " on" : "");
+    b.title = (i < 9 ? `key ${i + 1} · ` : "") + x.status;
+    b.innerHTML = `<span class="dot ${x.status}"></span>${esc(x.id)}${x.open ? `<span class="badge">${x.open}</span>` : ""}`;
+    b.onclick = () => switchHook(x.id);
+    $("hookTabs").appendChild(b);
+  });
+  $("verTabs").innerHTML = "";
+  h.versions.forEach(x => {
+    const b = document.createElement("button");
+    b.className = "chip" + (x.v === ver ? " on" : "");
+    b.textContent = "v" + x.v + (S.approved[ad + "/" + hook] === x.v ? " ✓" : "");
+    b.onclick = () => { ver = x.v; render(true); };
+    $("verTabs").appendChild(b);
+  });
+  $("compareBtn").hidden = h.versions.length < 2;
+  $("compareBtn").textContent = compare ? "Single" : "Compare";
+  const isLatest = ver === h.latest;
+  $("approveBtn").hidden = !isLatest;                        // approval is for the latest version only
+  $("approveBtn").textContent = h.status === "approved" ? `Approved v${ver} (undo)` : `Approve v${ver}`;
+  $("checkText").textContent = curVer().check || "";
+  $("flowHint").textContent = h.status === "approved"
+    ? `v${h.latest} is approved: the other hooks and lengths are built from it.`
+    : !isLatest ? `An older version: approve the latest (v${h.latest}).`
+    : "Nail this one first: the other hooks and lengths are built once a version is approved.";
+  if (resetStage) buildStage();
+  renderNotes();
+}
+
+function switchHook(id) { const x = curAd().hooks.find(y => y.id === id); if (!x) return; hook = id; ver = x.latest; compare = false; render(true); }
+
+function previous() {
+  const vs = curHook().versions.map(x => x.v), before = vs.filter(x => x < ver);
+  return before.length ? before[before.length - 1] : vs.find(x => x !== ver);
+}
+
+function buildStage() {
+  const stage = $("stage");
+  stage.innerHTML = "";
+  const shown = compare ? curHook().versions.filter(x => x.v === previous() || x.v === ver) : [curVer()];
+  shown.forEach(x => {
+    const fig = document.createElement("figure");
+    fig.innerHTML = `<figcaption>v${x.v}${compare && x.v !== ver ? " (muted, follows)" : ""}</figcaption>
+      <video ${compare && x.v !== ver ? "muted" : "controls"} preload="metadata" src="${encodeURI(x.file)}#t=0.05"></video>
+      <p class="err" hidden>This video would not load. The review server has probably stopped: double-click "Open review" in the run folder, or ask Claude to start it again, then reload this page.</p>`;
+    const v = fig.querySelector("video");
+    if (x.v === ver) v.dataset.main = "1";
+    v.addEventListener("error", () => { fig.querySelector(".err").hidden = false; });
+    stage.appendChild(fig);
+  });
+  const v = video();
+  v.addEventListener("timeupdate", () => { tick(); follow(false); });
+  ["play", "pause", "seeked", "ratechange"].forEach(e => v.addEventListener(e, () => follow(true)));
+  $("noteLabel").textContent = `Note at 0:00.0 on ${hook} v${ver}`;
+  loadWords();
+}
+
+function follow(hard) {               // compare: the muted second player follows the main one
+  const v = video(), o = other();
+  if (!o) return;
+  if (hard || Math.abs(o.currentTime - v.currentTime) > 0.25) o.currentTime = v.currentTime;
+  o.playbackRate = v.playbackRate;
+  if (v.paused && !o.paused) o.pause();
+  if (!v.paused && o.paused) o.play().catch(() => {});
+}
+
+async function loadWords() {
+  const f = curVer().words;
+  if (f === wordsFile) return tick();
+  wordsFile = f; words = [];
+  if (f) { try { words = await (await fetch(encodeURI(f))).json(); } catch (e) { words = []; } }
+  tick();
+}
+
+function tick() {
+  const v = video(); if (!v) return;
+  $("noteLabel").textContent = `Note at ${fmt(v.currentTime)} on ${hook} v${ver}`;
+  if (!words.length) { $("words").innerHTML = ""; return; }
+  const t = v.currentTime;
+  let i = words.findIndex(w => w.e >= t); if (i < 0) i = words.length - 1;
+  const from = Math.max(0, i - 6), to = Math.min(words.length, i + 7);
+  $("words").innerHTML = words.slice(from, to).map((w, k) =>
+    `<span data-s="${w.s}" class="${from + k === i && t >= w.s - 0.05 ? "now" : ""}">${esc(w.w)}</span>`).join(" ");
+  $("words").querySelectorAll("span").forEach(s => s.onclick = () => { v.currentTime = +s.dataset.s; });
+}
+
+function wordsAround(t) { return words.filter(w => w.e >= t - 1.2 && w.s <= t + 1.2).map(w => w.w).join(" "); }
+
+function renderNotes() {
+  const all = S.notes.filter(n => n.ad === ad && n.hook === hook);
+  const open = all.filter(n => n.status === "open").length, done = all.filter(n => n.status === "done").length;
+  $("counts").textContent = `${open} open · ${done} done on ${hook}`;
+  const list = all.filter(n => $("showDone").checked || n.status === "open").sort((x, y) => (y.version - x.version) || (x.t - y.t));
+  $("notes").innerHTML = list.length ? "" : '<p class="empty">No notes yet. Pause where something is off and press N.</p>';
+  list.forEach(n => {
+    const d = document.createElement("div");
+    d.className = "note " + n.status + (n.author === "QA" ? " qa" : "");
+    d.innerHTML = `<div class="meta"><span>v${n.version}</span><span class="t">${fmt(n.t)}</span>${n.general ? "<span>general</span>" : ""}<span>${esc(n.author)}</span><span class="st">${n.status}</span></div>
+      ${n.words ? `<div class="said">“${esc(n.words)}”</div>` : ""}
+      <div class="text">${esc(n.text)}</div>
+      ${n.reply ? `<div class="reply"><b>Claude</b>${esc(n.reply)}</div>` : ""}
+      <div class="links">${n.status === "open" ? (n.author === "QA" ? '<button data-s="dismissed">dismiss</button>' : '<button data-s="done">mark done</button><button data-s="dismissed">dismiss</button>') : '<button data-s="open">reopen</button>'}<button data-del="1">delete</button></div>`;
+    d.querySelector(".t").onclick = () => {
+      const go = () => { const v = video(); if (v) { v.currentTime = n.t; v.pause(); } };
+      if (n.version !== ver) { ver = n.version; compare = false; render(true); setTimeout(go, 300); } else go();
+    };
+    d.querySelectorAll(".links button").forEach(b => b.onclick = async () => {
+      if (b.dataset.del && !confirm("Delete this note?")) return;
+      update(await call("/notes/change", b.dataset.del ? { id: n.id, delete: true } : { id: n.id, status: b.dataset.s }));
+    });
+    $("notes").appendChild(d);
+  });
+}
+
+async function saveNote() {
+  const text = $("noteText").value.trim(), v = video();
+  if (!text || !v) return;
+  try {
+    update(await call("/notes", { ad, hook, version: ver, t: v.currentTime, words: wordsAround(v.currentTime), text, general: $("general").checked }));
+    $("noteText").value = ""; $("general").checked = false;
+  } catch (e) { alert("Could not save the note: " + e.message + ". Is the review server still running?"); }
+}
+
+$("noteText").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); saveNote(); }
+  if (e.key === "Escape") { e.preventDefault(); $("noteText").blur(); const v = video(); if (v) v.focus(); }
+});
+document.addEventListener("keydown", e => {
+  const tag = e.target.tagName;
+  if (tag === "TEXTAREA" || tag === "INPUT" || e.ctrlKey || e.metaKey || e.altKey) return;
+  const v = video(); if (!v) return;
+  const onVideo = tag === "VIDEO";              // the player handles space and arrows itself when focused
+  if (e.key === "n" || e.key === "N") { e.preventDefault(); v.pause(); $("noteText").focus(); }
+  else if (e.key === " " && !onVideo) { e.preventDefault(); v.paused ? v.play() : v.pause(); }
+  else if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && !onVideo) {
+    e.preventDefault(); v.currentTime = Math.max(0, v.currentTime + (e.key === "ArrowLeft" ? -1 : 1) * (e.shiftKey ? 5 : 1));
+  }
+  else if (e.key === "," || e.key === ".") { e.preventDefault(); v.pause(); v.currentTime = Math.max(0, v.currentTime + (e.key === "," ? -1 : 1) / FPS); }
+  else if (/^[1-9]$/.test(e.key)) { const x = curAd().hooks[+e.key - 1]; if (x) { e.preventDefault(); switchHook(x.id); } }
+});
+$("showDone").onchange = renderNotes;
+$("compareBtn").onclick = () => { compare = !compare; render(true); };
+$("approveBtn").onclick = async () => update(await call("/approve", { ad, hook, version: ver }));
+
+call("/state").then(s => update(s, true)).catch(() => {
+  document.body.innerHTML = '<p style="padding:16px">The review server is not answering. Double-click "Open review" in the run folder, or ask Claude to start it again, then reload this page.</p>';
+});
+setInterval(() => call("/state").then(s => update(s)).catch(() => {}), 4000);
+</script>
+</body>
+</html>

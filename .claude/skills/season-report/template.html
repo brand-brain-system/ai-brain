@@ -1,0 +1,171 @@
+<!doctype html>
+<!--
+  Season report template. Copy it, replace every {{…}}, repeat the section block per study, delete
+  sections that were dropped (and list them in the methods file). No scripts, no external files except
+  the fonts, so the page works when emailed or printed. Bars are plain divs: set each bar's width to its
+  share of the largest value in the chart (style="--w:62%"). The form: report-form.md.
+-->
+<html lang="{{da}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{Brand}} {{season}} report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f4; --panel: #ffffff; --ink: #1d1b18; --muted: #6b665e; --line: #e6e1d8;
+    --accent: #2f5d50; --accent-soft: #dfe9e4; --warn: #8a5a12; --warn-soft: #f6ead6; --bar: #2f5d50; --bar-2: #b9c9c1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151413; --panel: #1f1d1b; --ink: #f0ece6; --muted: #a39d94; --line: #33302c;
+      --accent: #8cc2ad; --accent-soft: #23312c; --warn: #e3b46a; --warn-soft: #2e2618; --bar: #8cc2ad; --bar-2: #3f524a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151413; --panel: #1f1d1b; --ink: #f0ece6; --muted: #a39d94; --line: #33302c;
+    --accent: #8cc2ad; --accent-soft: #23312c; --warn: #e3b46a; --warn-soft: #2e2618; --bar: #8cc2ad; --bar-2: #3f524a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 "DM Sans", system-ui, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1, h2 { font-family: Fraunces, Georgia, serif; font-weight: 650; line-height: 1.15; margin: 0 0 12px; }
+  h1 { font-size: clamp(2rem, 6vw, 3.2rem); }
+  h2 { font-size: clamp(1.35rem, 3.6vw, 1.9rem); }
+  .kicker { text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+  .lede { font-size: 1.15rem; color: var(--muted); margin: 0 0 24px; }
+  section, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin: 20px 0; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 16px 0; }
+  .tile { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .tile b { display: block; font-family: Fraunces, Georgia, serif; font-size: 1.7rem; line-height: 1.1; }
+  .tile span { font-size: .85rem; color: var(--muted); }
+  .defs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .defs h3 { font-size: 1rem; margin: 0 0 4px; }
+  .defs p { margin: 0; font-size: .92rem; color: var(--muted); }
+  .chart { margin: 18px 0 6px; }
+  .chart-title { font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; }
+  .caption { font-size: .82rem; color: var(--muted); margin: 2px 0 12px; }
+  .row { display: grid; grid-template-columns: minmax(110px, 34%) 1fr; gap: 10px; align-items: center; margin: 6px 0; font-size: .92rem; }
+  .track { background: var(--accent-soft); border-radius: 6px; height: 22px; position: relative; }
+  .fill { background: var(--bar); height: 100%; width: var(--w, 0%); border-radius: 6px; }
+  .fill.base { background: var(--bar-2); }
+  .val { position: absolute; right: 8px; top: 1px; font-size: .8rem; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .table-wrap { overflow-x: auto; }
+  .beside { border-left: 3px solid var(--accent); padding: 6px 12px; margin: 14px 0; font-size: .92rem; }
+  .note { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 8px 12px; font-size: .9rem; margin: 14px 0 6px; }
+  .note::before { content: "! "; font-weight: 700; }
+  .how { font-size: .85rem; }
+  a { color: var(--accent); }
+  ol.inside { columns: 2; column-gap: 24px; padding-left: 20px; margin: 0; }
+  @media (max-width: 560px) { ol.inside { columns: 1; } .row { grid-template-columns: 1fr; gap: 2px; } }
+  footer { color: var(--muted); font-size: .85rem; margin-top: 32px; }
+  @media print { body { background: #fff; } section, .panel { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+
+  <!-- 1. Cover -->
+  <div class="kicker">{{Season and year}} · {{brand}}</div>
+  <h1>{{Report title, e.g. "Hvad sidste Q4 kan lære os om dette"}}</h1>
+  <p class="lede">{{One sentence: what we followed and why.}}</p>
+  <div class="tiles">
+    <div class="tile"><b>{{n}}</b><span>{{ads that spent in the season}}</span></div>
+    <div class="tile"><b>{{amount}}</b><span>{{Meta spend, season}}</span></div>
+    <div class="tile"><b>{{dates}}</b><span>{{the sale week}}</span></div>
+    <div class="tile"><b>{{dates}}</b><span>{{the season}}</span></div>
+  </div>
+
+  <!-- 2. How to read this report -->
+  <div class="panel">
+    <h2>{{How to read this report}}</h2>
+    <div class="defs">
+      <div><h3>{{What's in it}}</h3><p>{{The sections in one sentence; the mode (full retro, short retro, public-only).}}</p></div>
+      <div><h3>{{What a winner is}}</h3><p>{{Top 10 % of the brand's own ads by spend in the window, with at least {{minimum}} spent.}}</p></div>
+      <div><h3>{{The middle ad}}</h3><p>{{Median: half above, half below, so one giant ad doesn't skew it.}}</p></div>
+      <div><h3>{{Dates and limits}}</h3><p>{{The windows; the one main limit. Details: <a href="{{methods.html}}">How we built this report</a>.}}</p></div>
+    </div>
+  </div>
+
+  <!-- 3. What's inside -->
+  <div class="panel">
+    <div class="kicker">{{What's inside}}</div>
+    <ol class="inside">
+      <li>{{CPM by week}}</li>
+      <li>{{…one line per section kept…}}</li>
+    </ol>
+  </div>
+
+  <!-- 4. A section. Copy this block per study; keep the numbering from processes/studies.md -->
+  <section id="s{{nn}}">
+    <div class="kicker">{{nn}} {{Section name}}</div>
+    <h2>{{The finding as one or two sentences, with the number in it.}}</h2>
+    <p>{{Short plain explanation: what we measured and what happened.}}</p>
+    <div class="tiles">
+      <div class="tile"><b>{{60 %}}</b><span>{{what it is}}</span></div>
+      <div class="tile"><b>{{…}}</b><span>{{…}}</span></div>
+    </div>
+    <div class="chart">
+      <div class="chart-title">{{Chart title}}</div>
+      <p class="caption">{{Sample, window, definition. * fewer than 30 ads: shown, not for advice.}}</p>
+      <div class="row"><span>{{Label}}</span><div class="track"><div class="fill" style="--w:{{100}}%"></div><span class="val">{{value}}</span></div></div>
+      <div class="row"><span>{{Label}}</span><div class="track"><div class="fill" style="--w:{{62}}%"></div><span class="val">{{value}}</span></div></div>
+      <div class="row"><span>{{All ads (the brand's rate)}}</span><div class="track"><div class="fill base" style="--w:{{40}}%"></div><span class="val">{{value}}</span></div></div>
+    </div>
+    <p class="beside">{{Across 432 brands last year: … (cross-brand study, finding n).}}</p>
+    <p class="note">{{What this number can't prove.}}</p>
+    <p class="how"><a href="{{methods.html#s-nn}}">{{How we measured this}}</a></p>
+  </section>
+
+  <!-- A table instead of bars, when the section needs one -->
+  <section id="s{{nn-table}}">
+    <div class="kicker">{{nn}} {{Section name}}</div>
+    <h2>{{Finding}}</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>{{Column}}</th><th>{{Column}}</th><th>{{Column}}</th></tr></thead>
+      <tbody><tr><td>{{…}}</td><td>{{…}}</td><td>{{…}}</td></tr></tbody>
+    </table></div>
+    <p class="caption">{{Sample, window, definition.}}</p>
+    <p class="note">{{Caveat.}}</p>
+    <p class="how"><a href="{{methods.html#s-nn}}">{{How we measured this}}</a></p>
+  </section>
+
+  <!-- 5. TL;DR -->
+  <div class="panel">
+    <div class="kicker">TL;DR</div>
+    <h2>{{What happened last season}}</h2>
+    <ul>
+      <li>{{One line per section, the finding with its number.}}</li>
+    </ul>
+  </div>
+
+  <!-- 6. Actions you could take: the plan, short, with this year's dates -->
+  <div class="panel">
+    <div class="kicker">{{Actions you could take}}</div>
+    <h2>{{This year's plan}}</h2>
+    <p class="caption">{{Ideas that follow from last season. Prices and dates are the brand's to set.}}</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>{{Date}}</th><th>{{What}}</th><th>{{Why (section)}}</th></tr></thead>
+      <tbody><tr><td>{{…}}</td><td>{{…}}</td><td>{{…}}</td></tr></tbody>
+    </table></div>
+  </div>
+
+  <!-- 7. Limits -->
+  <div class="panel">
+    <div class="kicker">{{Limits}}</div>
+    <h2>{{What this data can't tell us}}</h2>
+    <ul>
+      <li>{{Who bought: Meta shows who it reached, not who bought.}}</li>
+      <li>{{Profit and cause: spend shows what Meta funded, not why it worked.}}</li>
+      <li>{{Sample size: n ads, n winners.}}</li>
+    </ul>
+  </div>
+
+  <footer>{{Prepared by … · data: Meta Ads Manager export, dated … · draft until reviewed}}</footer>
+</main>
+</body>
+</html>

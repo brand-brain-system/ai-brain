@@ -1,0 +1,65 @@
+{
+  "$comment": "Committed brand configuration. Hooks run in bash on every platform (Git Bash on Windows) through run-hook.py from the repo root; the interpreter is python3, or python where python3 is the Windows Store stub. The permission rules and mount-guard keep the pinned method mount brain-system/ read-only. The brain is shared through git (see /save-brain). Personal overrides belong in settings.local.json. The env caps (spawn depth 1, five subagents at once) come from brain-system/system/agent-teams.md, section 8.",
+  "env": {
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH": "1",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "5"
+  },
+  "permissions": {
+    "deny": [
+      "Edit(/brain-system/**)",
+      "Edit(brain-system/**)",
+      "Write(/brain-system/**)",
+      "Write(brain-system/**)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "PY=python3; \"$PY\" -c 'import sys' >/dev/null 2>&1 || PY=python; \"$PY\" -c \"from pathlib import Path; import subprocess, runpy; r = subprocess.run(['git', 'rev-parse', '--show-toplevel'], capture_output=True, text=True); p = Path(r.stdout.strip()) / '.claude/hooks/run-hook.py'; runpy.run_path(str(p), run_name='__main__') if r.returncode == 0 and p.is_file() else None\" session-start",
+            "statusMessage": "Checking the method mount"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "PY=python3; \"$PY\" -c 'import sys' >/dev/null 2>&1 || PY=python; \"$PY\" -c \"from pathlib import Path; import subprocess, runpy; r = subprocess.run(['git', 'rev-parse', '--show-toplevel'], capture_output=True, text=True); p = Path(r.stdout.strip()) / '.claude/hooks/run-hook.py'; runpy.run_path(str(p), run_name='__main__') if r.returncode == 0 and p.is_file() else None\" craft-context",
+            "statusMessage": "Loading the craft catalog"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "PY=python3; \"$PY\" -c 'import sys' >/dev/null 2>&1 || PY=python; \"$PY\" -c \"from pathlib import Path; import subprocess, runpy; r = subprocess.run(['git', 'rev-parse', '--show-toplevel'], capture_output=True, text=True); p = Path(r.stdout.strip()) / '.claude/hooks/run-hook.py'; runpy.run_path(str(p), run_name='__main__') if r.returncode == 0 and p.is_file() else None\" mount-guard"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "PY=python3; \"$PY\" -c 'import sys' >/dev/null 2>&1 || PY=python; \"$PY\" -c \"from pathlib import Path; import subprocess, runpy; r = subprocess.run(['git', 'rev-parse', '--show-toplevel'], capture_output=True, text=True); p = Path(r.stdout.strip()) / '.claude/hooks/run-hook.py'; runpy.run_path(str(p), run_name='__main__') if r.returncode == 0 and p.is_file() else None\" pull-log"
+          }
+        ]
+      }
+    ]
+  }
+}

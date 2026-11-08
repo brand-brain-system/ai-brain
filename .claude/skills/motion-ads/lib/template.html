@@ -1,0 +1,146 @@
+<!doctype html>
+<!-- Starter page for a motion ad. Copy it and motion.js into the run folder, then replace the SCENE section.
+     Contract: window.seek(t) paints the exact frame for time t (seconds). No CSS transitions or animations,
+     no timers, no requestAnimationFrame in render mode, no state carried between frames, no Math.random
+     (use M.rng(seed)). Open the file in a browser for a live preview: space pauses, arrow keys step,
+     g toggles the safe-area guide. The renderer opens it with ?render=1&format=9x16 (or 4x5, 1x1). -->
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<!-- Brand fonts: the real font from Brand/brand-dna.md. Every font + weight used must also be in FONTS below. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;800&display=block">
+<style>
+  :root { --bg: #F4F1EA; --ink: #171717; --accent: #194319; --paper: #FFFFFF; }
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { position: relative; overflow: hidden; background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--ink); }
+  .abs { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; will-change: auto; }
+  #guide { position: absolute; inset: 0; pointer-events: none; display: none; }
+  #guide div { position: absolute; background: rgba(255, 0, 80, .18); }
+  #clock { position: fixed; right: 8px; bottom: 8px; font: 12px monospace; color: #fff; background: #0009; padding: 2px 6px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- SCENE: the elements of the approved static, each absolutely positioned. Copy them from the static's HTML. -->
+  <div id="headline" class="abs"></div>
+  <div id="product" class="abs"></div>
+  <div id="chips"></div>
+  <div id="price" class="abs"></div>
+  <div id="cta" class="abs"></div>
+  <div id="guide"></div>
+</div>
+<div id="clock"></div>
+<script src="motion.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const RENDER = Q.get('render') === '1';
+const FORMAT = Q.get('format') || '9x16';
+const SIZES = { '9x16': [1080, 1920], '4x5': [1080, 1350], '1x1': [1080, 1080] };
+const [W, H] = SIZES[FORMAT];
+const DUR = 7;                        // seconds; the renderer reads window.DUR. CTA hold ~2 s, not more
+// Every font the canvas or DOM uses, as CSS font shorthands. document.fonts.ready alone does NOT load
+// fonts nothing has laid out yet, so they are loaded explicitly before the first frame.
+const FONTS = ['800 120px "Poppins"', '500 48px "Poppins"'];
+
+// Safe areas: where platform UI covers the frame. 9:16 is the one box that is safe on every placement,
+// measured on real phones (x 100-880, y 290-1340; brain-system/creative-strategy-context/safe-zones.md,
+// Oct 2026, one source). 4:5 and 1:1 keep about 5 % margins.
+const SAFE = { '9x16': { x: 100, y: 290, w: 780, h: 1050 }, '4x5': { x: W * .05, y: H * .05, w: W * .9, h: H * .9 },
+  '1x1': { x: W * .05, y: H * .05, w: W * .9, h: H * .9 } }[FORMAT];
+const box = { x: SAFE.x, y: SAFE.y, w: SAFE.w, h: SAFE.h };
+
+// Layout per format: reframe, never crop one format into another.
+// head: [x, y, width, font px]; prod: [centre x, centre y, size]; cta: top y. Check with the g guide.
+const L = {
+  '9x16': { head: [box.x, box.y + 20, box.w, 96], prod: [W / 2, box.y + 610, 440], cta: box.y + box.h - 70 },
+  '4x5':  { head: [box.x, box.y + 30, box.w, 88], prod: [W / 2, H * .58, 440], cta: H - box.y - 110 },
+  '1x1':  { head: [box.x, box.y + 20, box.w, 80], prod: [W / 2, H * .56, 360], cta: H - box.y - 90 },
+}[FORMAT];
+
+const $ = (id) => document.getElementById(id);
+const stage = $('stage');
+stage.style.width = W + 'px'; stage.style.height = H + 'px';
+
+// ---- SCENE setup (placeholder content: replace with the approved static's elements and copy) ----
+const WORDS = ['OVERSKRIFT', 'FRA', 'DEN', 'GODKENDTE', 'STATIC'];
+$('headline').innerHTML = WORDS.map((w) => `<span style="display:inline-block;margin-right:.25em">${w}</span>`).join('');
+Object.assign($('headline').style, { width: L.head[2] + 'px', font: `800 ${L.head[3]}px/1.02 Poppins`, textTransform: 'uppercase' });
+const P = L.prod[2];
+Object.assign($('product').style, { width: P + 'px', height: P + 'px', borderRadius: '40px', background: 'var(--paper)',
+  boxShadow: '0 30px 60px #0002', display: 'grid', placeItems: 'center', font: '500 40px Poppins', color: '#999' });
+$('product').textContent = 'PRODUKTFOTO';      // an <img> from Brand/assets/ in a real run
+const CHIPS = ['Fordel et', 'Fordel to', 'Fordel tre'];
+$('chips').innerHTML = CHIPS.map((c) => `<div class="abs chip" style="padding:18px 30px;border-radius:999px;background:var(--ink);color:#fff;font:500 40px Poppins;white-space:nowrap">${c}</div>`).join('');
+Object.assign($('price').style, { padding: '22px 34px', borderRadius: '24px', background: 'var(--accent)', color: '#fff', font: '800 72px Poppins' });
+$('price').textContent = '000 kr';
+Object.assign($('cta').style, { width: box.w + 'px', textAlign: 'center', font: '800 56px Poppins' });
+$('cta').textContent = 'Handling her →';
+
+// ---- SCENE motion: a pure function of t. Frame 0 must work alone as the ad (thumbnail, muted autoplay). ----
+function draw(t) {
+  // Headline is on screen at frame 0 (it is the hook); each word lifts on its beat. A lift, not a scale:
+  // scaling words in a line pushes them into their neighbours (caught by the frame check, 10 Oct 2026).
+  [...$('headline').children].forEach((w, i) => {
+    const hit = M.in(t, 0.15 + i * 0.12, 'playful') - M.in(t, 0.3 + i * 0.12, 'default');
+    M.set(w, { y: -14 * hit });
+  });
+  M.set($('headline'), { x: L.head[0], y: L.head[1] });
+
+  // Product arrives from below on a heavy spring, then breathes slightly (no Ken Burns drift).
+  const p = M.in(t, 0.35, 'heavy');
+  M.set($('product'), { x: L.prod[0] - P / 2, y: L.prod[1] - P / 2 + (1 - p) * 700, s: 0.9 + 0.1 * p, o: 1 });
+
+  // Benefit chips pop in one by one beside the product.
+  [...document.querySelectorAll('.chip')].forEach((c, i) => {
+    const s = M.in(t, 1.4 + i * 0.45, 'snappy');
+    M.set(c, { x: box.x + (i % 2 ? box.w - c.offsetWidth : 0), y: L.prod[1] - P / 2 + 30 + i * 120, s: 0.6 + 0.4 * s, o: s * 3 });
+  });
+
+  // Price stamps in with a hit, CTA lands and holds to the end (hold >= 1.5 s so it can be read).
+  const pr = M.in(t, 3.2, 'snappy');
+  M.set($('price'), { x: L.prod[0] + P / 2 - 160, y: L.prod[1] + P / 2 - 110, s: 1.6 - 0.6 * pr, r: -6 * pr, o: pr * 4 });
+  const c = M.in(t, 4.4, 'default');
+  M.set($('cta'), { x: box.x, y: L.cta + (1 - c) * 60, o: c });
+}
+
+// ---- Plumbing: do not edit below ----
+window.__errors = [];
+window.addEventListener('error', (e) => window.__errors.push(String(e.message)));
+window.DUR = DUR; window.SIZE = [W, H];
+window.seek = (t) => { draw(t); return true; };
+window.ready = Promise.all([
+  ...FONTS.map((f) => document.fonts.load(f)),
+  ...[...document.images].map((i) => i.decode().catch(() => window.__errors.push('image failed: ' + i.src))),
+]).then(() => document.fonts.ready).then(() => { draw(0); return true; });
+
+const g = $('guide');
+g.innerHTML = `<div style="left:0;top:0;width:100%;height:${SAFE.y}px"></div><div style="left:0;top:${SAFE.y + SAFE.h}px;width:100%;bottom:0"></div>
+  <div style="left:0;top:0;width:${SAFE.x}px;height:100%"></div><div style="left:${SAFE.x + SAFE.w}px;top:0;right:0;height:100%"></div>`;
+
+if (RENDER) {
+  const st = document.createElement('style');
+  st.textContent = '*,*::before,*::after{transition:none!important;animation:none!important}';
+  document.head.appendChild(st);
+  Math.random = () => { throw new Error('Math.random is banned in render mode: use M.rng(seed)'); };
+  $('clock').remove();
+} else {
+  // Live preview, scaled to fit the browser window.
+  const fit = () => { const s = Math.min(innerWidth / W, innerHeight / H); stage.style.transform = `scale(${s})`; stage.style.transformOrigin = '0 0'; };
+  addEventListener('resize', fit); fit();
+  let t = 0, last = performance.now(), paused = false;
+  addEventListener('keydown', (e) => {
+    if (e.key === ' ') paused = !paused;
+    if (e.key === 'ArrowRight') t = Math.min(DUR, t + 1 / 30);
+    if (e.key === 'ArrowLeft') t = Math.max(0, t - 1 / 30);
+    if (e.key === 'g') g.style.display = g.style.display === 'block' ? 'none' : 'block';
+  });
+  window.ready.then(function loop() {
+    const now = performance.now();
+    if (!paused) t = (t + (now - last) / 1000) % DUR;
+    last = now; draw(t); $('clock').textContent = t.toFixed(2) + ' s  ' + FORMAT;
+    requestAnimationFrame(loop);
+  });
+}
+</script>
+</body>
+</html>

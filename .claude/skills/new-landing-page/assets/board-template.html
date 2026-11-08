@@ -1,0 +1,260 @@
+<!-- new-landing-page draft board. Build it with scripts/lp-board.py, never by hand: the builder fills __TITLE__ and the board-data script tag only. Publish with capabilities {db: {}, downloads: true} and the supporting files from files.json (page.html = the labelled draft, page-final.html = the clean build, ref/*.jpg = the reference screenshots). Section feedback and the approve / needs-changes decision live in the artifact's db (collections "feedback" and "decisions") and are read by processes/apply-feedback.md and processes/revise.md. -->
+<title>__TITLE__</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a phone on the left showing the draft, a section-by-section review list on the right; stacks to one column on a phone. */
+:root{
+  --bg:#f3f4f1; --panel:#ffffff; --ink:#15201b; --muted:#5d6b64; --line:#d9ded9;
+  --accent:#0b6b4f; --accent-ink:#ffffff; --warn:#a3470c; --warn-bg:#fdeee2; --ok-bg:#e2f3ec; --chip:#e9ece8;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif; --body:"Public Sans",ui-sans-serif,system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111614; --panel:#1a211e; --ink:#ecf1ee; --muted:#9aa8a1; --line:#2d3833;
+  --accent:#59c9a3; --accent-ink:#08231a; --warn:#f2a472; --warn-bg:#3a2415; --ok-bg:#15352a; --chip:#26302b; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#111614; --panel:#1a211e; --ink:#ecf1ee; --muted:#9aa8a1; --line:#2d3833;
+  --accent:#59c9a3; --accent-ink:#08231a; --warn:#f2a472; --warn-bg:#3a2415; --ok-bg:#15352a; --chip:#26302b; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:20px 60px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,34px);line-height:1.08;margin:0;text-wrap:balance}
+.meta{color:var(--muted);margin:4px 0 0;font-size:14px}
+.mono{font-family:var(--mono);font-size:12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-weight:700;font-size:14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;padding:8px 12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:focus-visible,.row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn[disabled]{opacity:.5;cursor:default}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.status{font-size:14px;color:var(--muted)}
+.decision{border-radius:10px;padding:10px 12px;font-weight:600;font-size:14px}
+.decision.approved{background:var(--ok-bg)}.decision.changes{background:var(--warn-bg);color:var(--warn)}
+.cols{display:grid;grid-template-columns:minmax(0,410px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}}
+.phone-col{display:flex;flex-direction:column;gap:10px;position:sticky;top:calc(env(safe-area-inset-top, 0px) + 10px)}
+@media (max-width:860px){.phone-col{position:static}}
+.phone{position:relative;transform:translateZ(0);height:min(74vh,760px);min-height:460px;max-width:100%;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}
+.scroller{height:100%;overflow-y:auto;overflow-x:hidden}
+.refimg{display:block;width:100%}
+.list{display:flex;flex-direction:column;gap:8px;min-width:0}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;cursor:pointer;text-align:left}
+.row.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.row .sid{font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.row .job{font-weight:700}
+.row .copy{grid-column:1 / -1;color:var(--muted);font-size:14px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.row.on .copy{-webkit-line-clamp:unset;display:block}
+.badge{font-family:var(--mono);font-size:12px;background:var(--chip);border-radius:999px;padding:2px 8px}
+.badge.has{background:var(--warn-bg);color:var(--warn)}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);padding:18px;width:min(560px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+fieldset{border:0;padding:0;margin:10px 0;display:flex;flex-direction:column;gap:6px}
+legend{font-weight:700;padding:0;margin-bottom:4px}
+textarea{width:100%;min-height:110px;font:inherit;padding:10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.notes{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:8px}
+.notes li{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}
+.chip{font-family:var(--mono);font-size:11px;border-radius:999px;padding:2px 8px;background:var(--chip);margin-right:6px}
+.chip.applied{background:var(--ok-bg)}.chip.declined{background:var(--warn-bg);color:var(--warn)}
+.res{color:var(--muted);margin-top:4px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1 id="title"></h1>
+    <p class="meta" id="meta"></p>
+  </header>
+
+  <div class="bar">
+    <button class="btn primary" id="approve" disabled>Approve this page</button>
+    <button class="btn" id="changes" disabled>Needs changes</button>
+    <button class="btn" id="tplfb" hidden>Feedback on the template</button>
+    <button class="btn" id="skillfb" hidden>Feedback on the skill</button>
+    <button class="btn" id="dl" hidden>Download the page</button>
+    <span class="status" id="status" role="status"></span>
+  </div>
+  <div class="decision" id="decision" hidden></div>
+
+  <div class="cols">
+    <div class="phone-col">
+      <div class="bar" id="views"></div>
+      <div class="phone"><div class="scroller" id="scroller"><div id="draft"></div><img class="refimg" id="refimg" alt="" hidden></div></div>
+      <p class="meta" id="viewnote"></p>
+    </div>
+    <div class="list" id="list"></div>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <h2 id="dlg-title" style="font-family:var(--display);margin:0 0 4px;font-size:22px"></h2>
+  <p class="meta" id="dlg-meta"></p>
+  <fieldset>
+    <legend>What is this feedback about?</legend>
+    <label id="scope-section-l"><input type="radio" name="scope" id="scope-section" value="section"> This section, on this page</label>
+    <label id="scope-template-l"><input type="radio" name="scope" id="scope-template" value="template"> This template, for every brand</label>
+    <label><input type="radio" name="scope" id="scope-skill" value="skill"> The skill, for every run</label>
+  </fieldset>
+  <label for="fbtext" class="meta">Say what to change. Claude applies it in the next revision, or when you say "apply feedback".</label>
+  <textarea id="fbtext"></textarea>
+  <div class="bar" style="margin-top:10px">
+    <button type="button" class="btn primary" id="fbsend" disabled>Save feedback</button>
+    <button type="button" class="btn" id="fbclose">Close</button>
+    <span class="status" id="fbstatus" role="status"></span>
+  </div>
+  <ul class="notes" id="notes"></ul>
+</dialog>
+
+<script type="application/json" id="board-data">__DATA__</script>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const D = JSON.parse($('board-data').textContent);
+  let db = null, dl = null, notes = [], current = null, decision = null;
+  $('title').textContent = D.brand + ' landing page, draft ' + D.version;
+  $('meta').textContent = D.template + ' ' + D.templateName + (D.mode === 'final' ? ' · final' : '') + ' · ' + D.run;
+
+  // ---- draw the draft inside the phone (the page's own HTML and CSS, scoped in a shadow root) ----
+  const host = $('draft'); const root = host.attachShadow({mode: 'open'});
+  function initPage(r){
+    r.querySelectorAll('.quiz').forEach(q => { const steps = [...q.querySelectorAll('.qstep')]; let i = 0;
+      q.addEventListener('click', e => { const b = e.target.closest('.qopt'); if (!b) return; steps[i].hidden = true; i++;
+        if (i < steps.length){ steps[i].hidden = false; } else { const l = q.querySelector('.qload'); l.hidden = false;
+          setTimeout(() => { l.hidden = true; q.querySelector('.qresult').hidden = false; }, 1400); } }); });
+    r.querySelectorAll('.game').forEach(g => { const box = g.querySelector('.gcards'); const prizes = JSON.parse(box.dataset.prizes || '[]'); let found = 0;
+      box.addEventListener('click', e => { const c = e.target.closest('.gcard'); if (!c || c.classList.contains('open') || found >= prizes.length) return;
+        c.classList.add('open'); c.innerHTML = prizes[found]; found++; g.querySelector('.gcount').textContent = found + ' of ' + prizes.length + ' found';
+        if (found >= prizes.length) setTimeout(() => { g.querySelector('.gwin').hidden = false; }, 500); }); });
+  }
+  fetch(D.page).then(r => r.text()).then(src => {
+    const doc = new DOMParser().parseFromString(src, 'text/html');
+    doc.querySelectorAll('link[rel="stylesheet"]').forEach(l => { const n = document.createElement('link'); n.rel = 'stylesheet'; n.href = l.href; document.head.append(n); });
+    const css = [...doc.querySelectorAll('style')].map(s => s.textContent).join('\n')
+      .replace(/:root\{/g, ':host{').replace(/(^|\})\s*html\{[^}]*\}/g, '$1').replace(/(^|\})\s*body\{/g, '$1.lp-body{');
+    const st = document.createElement('style'); st.textContent = css + '\n[hidden]{display:none!important}.lp-body{min-height:100%}.s{cursor:pointer}';
+    const body = document.createElement('div'); body.className = 'lp-body ' + doc.body.className;
+    doc.body.querySelectorAll('script').forEach(s => s.remove());
+    body.innerHTML = doc.body.innerHTML;
+    root.append(st, body); initPage(root);
+    body.addEventListener('click', e => { const a = e.target.closest('a'); if (a){ e.preventDefault(); }
+      const s = e.target.closest('.s'); if (s && !e.target.closest('.qopt,.gcard,summary,label')) select(s.dataset.sid, false); });
+  }).catch(() => { $('viewnote').textContent = 'The draft could not be loaded here. Ask Claude for the page file.'; });
+
+  // ---- draft / reference switch ----
+  const views = [{k: 'draft', label: 'Draft'}].concat((D.refs || []).map(r => ({k: r.slug, label: 'Reference: ' + r.brand, img: r.img, url: r.url})));
+  views.forEach(v => { const b = document.createElement('button'); b.className = 'btn'; b.textContent = v.label; b.setAttribute('aria-pressed', v.k === 'draft');
+    b.addEventListener('click', () => show(v)); v.el = b; $('views').append(b); });
+  function show(v){
+    views.forEach(x => x.el.setAttribute('aria-pressed', x === v));
+    const isDraft = v.k === 'draft'; host.hidden = !isDraft; $('refimg').hidden = isDraft;
+    if (!isDraft){ $('refimg').src = v.img; $('refimg').alt = v.label; }
+    $('viewnote').textContent = isDraft ? 'Tap a section in the draft or in the list to leave feedback on it.' : 'The reference page this template came from (' + v.url + '). Layout is borrowed; none of its words or artwork are.';
+    $('scroller').scrollTop = 0;
+  }
+  show(views[0]);
+
+  // ---- section list ----
+  const rows = new Map();
+  D.sections.forEach(s => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'row';
+    const left = document.createElement('div');
+    const sid = document.createElement('div'); sid.className = 'sid'; sid.textContent = s.id.toUpperCase() + ' · ' + s.type.replace(/_/g, ' ');
+    const job = document.createElement('div'); job.className = 'job'; job.textContent = s.job;
+    left.append(sid, job);
+    const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = 'Feedback';
+    const copy = document.createElement('div'); copy.className = 'copy'; copy.textContent = s.summary;
+    b.append(left, badge, copy);
+    b.addEventListener('click', () => select(s.id, true));
+    rows.set(s.id, {el: b, badge, s}); $('list').append(b);
+  });
+  function select(id, scroll){
+    const r = rows.get(id); if (!r) return;
+    const was = r.el.classList.contains('on');
+    rows.forEach(x => x.el.classList.remove('on')); r.el.classList.add('on');
+    if (scroll){ if (host.hidden) show(views[0]); const t = root.getElementById(id), sc = $('scroller'); if (t) sc.scrollTo({top: sc.scrollTop + t.getBoundingClientRect().top - sc.getBoundingClientRect().top, behavior: 'smooth'}); }
+    else r.el.scrollIntoView({block: 'nearest'});
+    if (was || !scroll) openDialog(r.s, 'section');
+  }
+
+  // ---- feedback ----
+  const dlg = $('dlg'), fbtext = $('fbtext'), fbsend = $('fbsend'), fbstatus = $('fbstatus');
+  $('fbclose').addEventListener('click', () => dlg.close());
+  $('tplfb').addEventListener('click', () => openDialog(null, 'template'));
+  $('skillfb').addEventListener('click', () => openDialog(null, 'skill'));
+  fbtext.addEventListener('input', () => { fbsend.disabled = !db || !fbtext.value.trim(); });
+  function openDialog(s, scope){
+    current = s;
+    $('dlg-title').textContent = s ? 'Feedback on ' + s.id.toUpperCase() + ' (' + s.type.replace(/_/g, ' ') + ')' : scope === 'template' ? 'Feedback on the ' + D.templateName + ' template' : 'Feedback on the skill';
+    $('dlg-meta').textContent = s ? s.job : scope === 'template' ? 'Changes this template for every brand that uses it.' : 'Applies to every future landing page run.';
+    $('scope-section-l').hidden = !s;
+    $(s ? 'scope-section' : scope === 'template' ? 'scope-template' : 'scope-skill').checked = true;
+    fbtext.value = ''; fbsend.disabled = true; fbstatus.textContent = db ? '' : 'Feedback is not available in this view.';
+    renderNotes(); dlg.showModal(); fbtext.focus();
+  }
+  fbsend.addEventListener('click', async () => {
+    const text = fbtext.value.trim(); if (!db || !text) return;
+    const scope = (document.querySelector('input[name="scope"]:checked') || {}).value || 'skill';
+    const now = new Date().toISOString();
+    const id = 'fb-' + now.replace(/[^0-9]/g, '').slice(0, 14) + '-' + Math.random().toString(36).slice(2, 7);
+    const doc = {scope, text, status: 'new', createdAt: now, run: D.run, brand: D.brand, skill: 'new-landing-page', template: D.template, pageVersion: D.version};
+    if (current) Object.assign(doc, {section: current.id, sectionType: current.type});
+    fbsend.disabled = true; fbstatus.textContent = 'Saving…';
+    try { await db.collection('feedback').doc(id).set(doc); fbtext.value = ''; fbstatus.textContent = 'Saved. Tell Claude to revise, or keep adding notes.'; }
+    catch(err){ const c = err && err.code; fbstatus.textContent = c === 'invalid_argument' ? 'You can view this board but not add feedback.' : c === 'resource_exhausted' ? 'Too many saves at once, wait a moment.' : 'Not saved, try again.'; fbsend.disabled = !fbtext.value.trim(); }
+  });
+  function relevant(){
+    if (current) return notes.filter(n => n.section === current.id);
+    return notes.filter(n => !n.section);
+  }
+  function renderNotes(){
+    const list = $('notes'); list.textContent = '';
+    const names = {new: 'Waiting for Claude', applied: 'Applied', declined: 'Not applied'};
+    const scopes = {section: 'This section', template: 'Template', skill: 'Skill'};
+    relevant().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).forEach(n => {
+      const li = document.createElement('li');
+      const chip = document.createElement('span'); chip.className = 'chip ' + (n.status || 'new'); chip.textContent = names[n.status] || names.new;
+      const sc = document.createElement('span'); sc.className = 'mono'; sc.textContent = (scopes[n.scope] || n.scope) + ' · draft ' + (n.pageVersion == null ? '?' : n.pageVersion) + ' · ' + (n.createdAt || '').slice(0, 10);
+      const t = document.createElement('div'); t.textContent = n.text;
+      li.append(chip, sc, t);
+      if (n.resolution){ const r = document.createElement('div'); r.className = 'res'; r.textContent = n.resolution; li.append(r); }
+      list.append(li);
+    });
+  }
+  function paint(){
+    rows.forEach((r, id) => { const k = notes.filter(n => n.section === id && n.status !== 'applied' && n.status !== 'declined').length;
+      const all = notes.filter(n => n.section === id).length;
+      r.badge.classList.toggle('has', k > 0); r.badge.textContent = k ? k + ' open' : all ? all + ' done' : 'Feedback'; });
+    const open = notes.filter(n => (n.status || 'new') === 'new').length;
+    $('status').textContent = open ? open + ' note' + (open === 1 ? '' : 's') + ' waiting for Claude' : '';
+  }
+
+  // ---- decision ----
+  function showDecision(){
+    const el = $('decision'); if (!decision){ el.hidden = true; return; }
+    el.hidden = false; el.className = 'decision ' + (decision.decision === 'approved' ? 'approved' : 'changes');
+    el.textContent = decision.decision === 'approved' ? 'Draft ' + D.version + ' approved on ' + (decision.at || '').slice(0, 10) + '. Tell Claude to finish the page.' : 'Draft ' + D.version + ' needs changes. Leave notes on the sections, then tell Claude to revise.';
+  }
+  async function decide(kind){
+    if (!db) return; $('status').textContent = 'Saving…';
+    try { await db.doc('decisions/v' + D.version).set({decision: kind, pageVersion: D.version, run: D.run, at: new Date().toISOString()}); $('status').textContent = 'Saved'; }
+    catch(e){ $('status').textContent = 'Not saved, try again.'; }
+  }
+  $('approve').addEventListener('click', () => decide('approved'));
+  $('changes').addEventListener('click', () => decide('changes'));
+
+  // ---- download ----
+  $('dl').addEventListener('click', async () => {
+    if (!dl) return; $('status').textContent = 'Preparing the page…';
+    try { const res = await fetch(D.finalPage); if (!res.ok) throw new Error('fetch'); await dl.save({filename: D.slug + '.html', data: await res.blob()}); $('status').textContent = 'Download ready'; }
+    catch(err){ const c = err && err.code; $('status').textContent = c === 'declined' ? 'Download cancelled' : 'Download failed, try again'; }
+  });
+
+  if (window.claude && window.claude.use){
+    window.claude.use('downloads').then(d => { if (d){ dl = d; $('dl').hidden = false; } }).catch(() => {});
+    window.claude.use('db').then(d => {
+      if (!d) return; db = d;
+      $('approve').disabled = false; $('changes').disabled = false; $('tplfb').hidden = false; $('skillfb').hidden = false;
+      db.collection('feedback').onSnapshot(snap => { notes = snap.docs.filter(x => x.exists).map(x => Object.assign({id: x.id}, x.data())); paint(); if (dlg.open) renderNotes(); }, () => {});
+      db.doc('decisions/v' + D.version).onSnapshot(snap => { decision = snap.exists ? snap.data() : null; showDecision(); }, () => {});
+    }).catch(() => {});
+  }
+})();
+</script>

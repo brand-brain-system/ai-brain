@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "example": true,
+    "brand": "[BRAND]",
+    "kicker": "Weekly creative read · run #1",
+    "week_label": "Week 41",
+    "date_range": "Mon 5 Oct to Sun 11 Oct",
+    "accent": "#5b4fd6",
+    "concept_label": "Example only: replace every field before use.",
+    "prepared_by": "Prepared from the brand brain"
+  },
+  "headline": "Weekly creative read",
+  "intro": "Five reads, one synthesis, a short list of what to make next. Sources are named at the bottom, and every line carries a label so a guess never looks like a fact.",
+  "key_points": [
+    {"title": "One argument fills the account", "body": "**<n>%** of live ads make the same claim, and it is growing. Rivals mix three claims. The customers' own words ask a different question.", "label": "Verified"},
+    {"title": "A rival's offer is scaling", "body": "Competitor A's entry offer climbed from rank **#<a>** to **#<b>** over <n> days of paid delivery. It looks funded, not tested.", "label": "Inferred"},
+    {"title": "The strongest customer line is unused", "body": "The most repeated phrase in reviews appears in **<n>** of our ads. It names a situation the ads never show.", "label": "Verified"}
+  ],
+  "account": {
+    "summary": "Window: <dates>, <attribution window>. Source: ad-account export dated <date>.",
+    "working": [
+      {"title": "<Ad or concept name>", "detail": "<spend> at <ROAS or CPA>, <hook rate>", "label": "Verified"},
+      {"title": "<Ad or concept name>", "detail": "best <format> spender", "label": "Verified"}
+    ],
+    "dying": [
+      {"title": "<Ad or concept name>", "detail": "<spend> at <ROAS>; third variant of the same idea", "label": "Verified"},
+      {"title": "<Ad or concept name>", "detail": "<hook rate> hook, <ROAS> ROAS", "label": "Verified"}
+    ],
+    "note": "**Structural:** formats rotated but efficiency didn't move. <One sentence on who is under- or over-funded, with the numbers.>"
+  },
+  "competitors": {
+    "summary": "Rival A: <n> launches, <n>% promotional. Rival B: <n> launches. Rival C is dark: a coverage gap, not silence.",
+    "cards": [
+      {"title": "Borrowed credibility", "body": "Two rivals moved to endorsements in the same 30 days. **The trust fight is being won with names, not proof.**", "label": "Verified"},
+      {"title": "Offer pressure", "body": "Rival A's entry offer is scaling (<n> days). Rival B's top ad sells its line at <n>% off. **We shouldn't answer in kind.**", "label": "Inferred"},
+      {"title": "Whitespace held", "body": "Neither rival runs a proof-led ad. The one move worth borrowing is <a format>, which we have never run.", "label": "Inferred"}
+    ]
+  },
+  "voice": {
+    "summary": "<n> reviews and <n> ad comments read, last 60 days. <Say which source is thin or old.>",
+    "items": [
+      {"theme": "A situation, not a feature", "quote": "<exact customer words, never shortened>", "source": "review, <date>", "note": "The strongest repeated register on the account.", "label": "Verified"},
+      {"theme": "Relief language", "quote": "<exact customer words>", "source": "review, <date>", "note": "Unchanged and still the core.", "label": "Verified"},
+      {"theme": "Price doubt", "quote": "<exact customer words>", "source": "ad comment, <date>", "note": "Rarer but hotter: <n> average rating when mentioned.", "label": "Verified"}
+    ]
+  },
+  "openings": {
+    "summary": "What is moving outside the account.",
+    "organic": {"title": "Organic outliers (30 days)", "intro": "The closest organic match to our approved angle:",
+      "items": [{"text": "Creator A: <views> (**<n>x** median)", "label": "Verified"}, {"text": "Creator B: <views> (**<n>x** median)", "label": "Verified"}],
+      "callout": "**Do not chase:** <three formats that look hot but don't fit the brand>."},
+    "affinity": {"title": "Affinity signals (public ad library, other categories)",
+      "items": [{"text": "**<Brand>**: rank 1 for <n> days. <The move, in a line>.", "label": "Verified"}, {"text": "**<Brand>**: <the move>.", "label": "Inferred"}]}
+  },
+  "next": {
+    "summary": "Three concepts worth briefing. Each traces to a persona, an angle and the evidence above.",
+    "concepts": [
+      {"name": "C1 <name>", "persona": "<card in personas-profile.md>", "angle": "<one line>", "why": "<the evidence it rests on>", "label": "Inferred", "verdict": "Brief it"},
+      {"name": "C2 <name>", "persona": "<card>", "angle": "<one line>", "why": "<evidence>", "label": "Inferred", "verdict": "Test small"},
+      {"name": "C3 <name>", "persona": "<card>", "angle": "<one line>", "why": "<evidence>", "label": "Inferred", "verdict": "Hold"}
+    ]
+  },
+  "judging": {
+    "title": "20 concepts, 60 blind verdicts, 8 survivors",
+    "summary": "Optional. Three independent judges per concept, none seeing the others. Survival needs 7 or more from at least 2 of 3.",
+    "judges": [
+      {"name": "Judge A: track record", "text": "The account's all-time winners, tags and failure patterns. Asks: has this worked here before?"},
+      {"name": "Judge B: customer", "text": "This week's customer-language memo only. Asks: does it sound like what buyers actually say?"},
+      {"name": "Judge C: assassin", "text": "Nothing but the concept, told to kill it, default to no."}
+    ],
+    "died": "<The patterns that died and why, in two lines. Link the full verdicts file.>"
+  },
+  "limits": [
+    "No ad-account export this week: the account section is marked data-limited until one is saved to `source-pulls/`.",
+    "Ad library ranks are impressions inside a start-date cohort, not sales."
+  ],
+  "sources": [
+    {"name": "Public ad library", "what": "rivals' live ads, read in the browser", "date": "<date>"},
+    {"name": "Review export", "what": "<n> reviews", "date": "<date>"},
+    {"name": "Ad-account export", "what": "ad-level report", "date": "<date>"}
+  ]
+}

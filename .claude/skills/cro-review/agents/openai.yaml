@@ -1,0 +1,5 @@
+interface:
+  display_name: "CRO Review"
+  short_description: "Review a landing page and prioritize improvements"
+  default_prompt: "Use $cro-review to review this landing page, separate verified faults from judgment, and recommend the highest-priority changes."
+
